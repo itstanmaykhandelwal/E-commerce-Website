@@ -73,14 +73,14 @@ const Collection = () => {
     }
     useEffect(() => {
         applyFilter();
-    }, [category, subCategory,search, products])
+    }, [category, subCategory,search,showSearch, products])
 
     useEffect(() => {
         sortProduct();
     }, [sortType])
     useEffect(() => {
         setFilterProducts(products)
-    }, [])
+    }, [products])
     return (
         <div className="flex flex-col sm:flex-row gap-1 sm:gap-10 pt-10 border-1">
             {/* Filter Option */}
