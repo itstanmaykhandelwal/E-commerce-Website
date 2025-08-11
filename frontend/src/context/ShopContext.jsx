@@ -19,69 +19,107 @@ const ShopContextProvider = (props) => {
     const [token, setToken] = useState("")
     const navigate = useNavigate();
 
-    const addToCart = async (itemId, size) => {
-
+    const addToCart = async (itemId, size, color) => {
         if (!size) {
             toast.error('Select Product Size');
+            return;
+        }
+        if (!color) {
+            toast.error('Select Product Color');
             return;
         }
 
         let cartData = structuredClone(cartItems);
 
-        if (cartData[itemId]) {
-            if (cartData[itemId][size]) {
-                cartData[itemId][size] += 1;
-            }
-            else {
-                cartData[itemId][size] = 1;
-            }
-        }
-        else {
+        if (!cartData[itemId]) {
             cartData[itemId] = {};
-            cartData[itemId][size] = 1;
         }
+        if (!cartData[itemId][size]) {
+            cartData[itemId][size] = {};
+        }
+        if (cartData[itemId][size][color]) {
+            cartData[itemId][size][color] += 1;
+        } else {
+            cartData[itemId][size][color] = 1;
+        }
+
         setCartItems(cartData);
-    }
+
+        if (token) {
+            try {
+                await axios.post(
+                    backendUrl + '/api/cart/add',
+                    { itemId, size, color }, // <- yaha color bhi bhejna zaroori hai
+                    { headers: { Authorization: `Bearer ${token}` } }
+                );
+            } catch (error) {
+                console.log(error);
+                toast.error(error.message);
+            }
+        }
+    };
+
+
 
     const getCartCount = () => {
         let totalCount = 0;
-        for (const items in cartItems) {
-            for (const item in cartItems[items]) {
-                try {
-                    if (cartItems[items][item] > 0) {
-                        totalCount += cartItems[items][item];
+        for (const itemId in cartItems) {
+            for (const size in cartItems[itemId]) {
+                for (const color in cartItems[itemId][size]) {
+                    if (cartItems[itemId][size][color] > 0) {
+                        totalCount += cartItems[itemId][size][color];
                     }
-                } catch (error) {
-
                 }
             }
         }
         return totalCount;
-    }
+    };
 
-    const updateQuantity = async (itemId, size, quantity) => {
+    const updateQuantity = async (itemId, size, color, quantity) => {
         let cartData = structuredClone(cartItems);
-        cartData[itemId][size] = quantity;
+
+        if (
+            cartData[itemId] &&
+            cartData[itemId][size] &&
+            cartData[itemId][size][color] !== undefined
+        ) {
+            cartData[itemId][size][color] = quantity;
+        }
 
         setCartItems(cartData);
-    }
+
+        if (token) {
+            try {
+                await axios.post(
+                    backendUrl + '/api/cart/update',
+                    { itemId, size, color, quantity },
+                    { headers: { Authorization: `Bearer ${token}` } }
+                );
+            } catch (error) {
+                console.log(error);
+                toast.error(error.message);
+            }
+        }
+    };
+
 
     const getCartAmount = () => {
         let totalAmount = 0;
-        for (const items in cartItems) {
-            let itemInfo = products.find((product) => product._id === items);
-            for (const item in cartItems[items]) {
-                try {
-                    if (cartItems[items][item] > 0) {
-                        totalAmount += itemInfo.price * cartItems[items][item];
-                    }
-                } catch (error) {
+        for (const itemId in cartItems) {
+            let itemInfo = products.find((product) => product._id === itemId);
+            if (!itemInfo) continue;
 
+            for (const size in cartItems[itemId]) {
+                for (const color in cartItems[itemId][size]) {
+                    let qty = cartItems[itemId][size][color];
+                    if (qty > 0) {
+                        totalAmount += itemInfo.price * qty;
+                    }
                 }
             }
         }
         return totalAmount;
-    }
+    };
 
     const getProductsData = async () => {
         try {
@@ -104,10 +142,10 @@ const ShopContextProvider = (props) => {
     }, [])
 
     useEffect(() => {
-        if(!token && localStorage.getItem('token')){
+        if (!token && localStorage.getItem('token')) {
             setToken(localStorage.getItem('token'))
         }
-    },[])
+    }, [])
     const value = {
         products,
         currency,

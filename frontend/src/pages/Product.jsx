@@ -7,10 +7,11 @@ import RelatedProducts from '../components/RelatedProducts';
 const Product = () => {
 
     const { productId } = useParams();
-    const { products, currency,addToCart } = useContext(ShopContext);
+    const { products, currency, addToCart } = useContext(ShopContext);
     const [productData, setProductData] = useState(false);
     const [image, setImage] = useState('');
     const [size, setSize] = useState('');
+    const [color, setColor] = useState('');
 
     const fetchProductData = async () => {
         products.map((item) => {
@@ -64,7 +65,22 @@ const Product = () => {
                             ))}
                         </div>
                     </div>
-                    <button onClick={() =>addToCart(productData._id,size) } className='bg-black text-white px-8 py-3 text-sm active:bg-gray-700'>ADD TO CART</button>
+                    <div className='flex flex-col gap-4 my-8'>
+                        <p>Select Color</p>
+                        <div className='flex gap-2'>
+                            {productData.color.map((item, index) => (
+                                <button onClick={() => setColor(item)} className={`border py-2 px-4 bg-gray-100 ${item === color ? 'border-orange-500' : ''}`} key={index}>{item}</button>
+                            ))}
+                        </div>
+                    </div>
+                    <button onClick={() => {
+                        console.log("Add to Cart Clicked:", {
+                            itemId: productData._id,
+                            size,
+                            color
+                        });
+                        addToCart(productData._id, size, color);
+                    }} className='bg-black text-white px-8 py-3 text-sm active:bg-gray-700'>ADD TO CART</button>
                     <hr className='mt-8 sm:w-4/5' />
                     <div className='text-sm text-gray-500 mt-5 flex flex-col gap-1'>
                         <p>100% Original product.</p>
@@ -85,7 +101,7 @@ const Product = () => {
                 </div>
             </div>
             {/* Display Related Products */}
-            <RelatedProducts category={productData.category} subCategory={productData.subCategory}/>
+            <RelatedProducts category={productData.category} subCategory={productData.subCategory} />
         </div>
     ) : <div className='opacity-0'></div>
 }
