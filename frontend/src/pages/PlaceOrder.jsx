@@ -55,24 +55,28 @@ const PlaceOrder = () => {
                 }
             }
             let orderData = {
-                address:formData,
-                items:orderItems,
-                amount:getCartAmount() + delivery_fee
+                address: formData,
+                items: orderItems,
+                amount: getCartAmount() + delivery_fee
             }
-            switch(method){
+            switch (method) {
                 // API calls on COD
                 case 'cod':
-                    const response = await axios.post(backendUrl+'/api/order/place',orderData,{headers:{token}})
-                    if(response.data.success){
+                    const response = await await axios.post(
+                        backendUrl + '/api/order/place',
+                        orderData,
+                        { headers: { Authorization: `Bearer ${token}` } }
+                    );
+                    if (response.data.success) {
                         setCartItems({})
                         navigate('/orders')
-                    }else{
+                    } else {
                         toast.error(response.data.message)
                     }
                     break;
 
-                    default:
-                        break;
+                default:
+                    break;
             }
         } catch (error) {
             console.log(error);

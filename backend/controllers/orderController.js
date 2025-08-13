@@ -4,7 +4,8 @@ import userModel from "../models/userModel.js";
 // Placing order using COD Method
 const placeOrder = async (req, res) => {
     try {
-        const { userId, items, amount, address } = req.body;
+        const { items, amount, address } = req.body;
+        const userId = req.user.id;
 
         const orderData = {
             userId,
@@ -35,10 +36,27 @@ const placeOrderStripped = async (req, res) => {};
 const placeOrderRazorpay = async (req, res) => {};
 
 // All Order data for Admin Panel
-const allOrders = async (req, res) => {};
+const allOrders = async (req, res) => {
+    try{
+        const orders = await orderModel.find({})
+        res.json({success:true,orders})
+    }catch(error){
+        console.log(error);
+        res.json({ success: false, message: error.message });
+    }
+};
 
 // Using Order Data for frontend
-const userOrder = async (req, res) => {};
+const userOrder = async (req, res) => {
+    try {
+        const userId = req.user.id; // token se le raha hai
+        const orders = await orderModel.find({ userId });
+        res.json({ success: true, orders });
+    } catch (error) {
+        console.log(error);
+        res.json({ success: false, message: error.message });
+    }
+};
 
 // update Order status from admin
 const updateStatus = async (req, res) => {};
