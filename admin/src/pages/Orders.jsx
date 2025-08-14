@@ -2,9 +2,10 @@ import React from 'react'
 import { useState } from 'react'
 import axios from 'axios';
 // import { backendUrl } from 'd:/Gameplay/1HKhtfCExuLfParQmrMxqB/forever-full-stack/admin/src/App';
-import { backendUrl } from '../App'
+import { backendUrl, currency } from '../App'
 import { useEffect } from 'react';
 import { toast } from 'react-toastify'
+import { assets } from '../assets/assets';
 
 const Orders = ({ token }) => {
     const [orders, setOrders] = useState([])
@@ -24,6 +25,18 @@ const Orders = ({ token }) => {
             }
         } catch (error) {
             toast.error(error.message)
+        }
+    }
+
+    const statusHandler = async (event,orderId) => {
+        try{
+            const response = await axios.post(backendUrl + '/api/order/status',{orderId,status:event.target.value},{ headers: { Authorization: `Bearer ${token}` } })
+            if(response.data.success){
+                await fetchAllOrders()
+            }
+        }catch(error){
+            console.log(error)
+            toast.error(response.data.message);
         }
     }
     useEffect(() => {
