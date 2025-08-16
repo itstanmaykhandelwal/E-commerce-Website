@@ -28,6 +28,55 @@ const PlaceOrder = () => {
         setFormData(data => ({ ...data, [name]: value }))
 
     }
+    const initPay = (order) => {
+        const options = {
+            key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+            amount: order.amount,
+            currency: order.currency,
+            name: 'Order Payment',
+            description: "Order Payment",
+            order_id: order.id,
+            handler: async function (response) {
+                try {
+                    const { data } = await axios.post(
+                        backendUrl + "/api/order/verifyRazorpay",
+                        response, // { razorpay_order_id, razorpay_payment_id, razorpay_signature }
+                        { headers: { Authorization: `Bearer ${token}` } }
+                    );
+
+                    if (data.success) {
+                        navigate("/orders");
+                        setCartItems({});
+                    } else {
+                        toast.error(data.message);
+                    }
+                } catch (error) {
+                    console.log(error);
+                    toast.error("Payment verification failed");
+                }
+            },
+
+            config: {
+                display: {
+                    blocks: {
+                        upi: {
+                            name: "Pay via UPI",
+                            instruments: [
+                                { method: "upi" }
+                            ]
+                        }
+                    },
+                    sequence: ["block.upi", "block.card", "block.netbanking"],
+                    preferences: {
+                        show_default_blocks: true
+                    }
+                }
+            }
+        };
+
+        const rzp = new window.Razorpay(options);
+        rzp.open();
+    };
 
     const onSubmitHandler = async (event) => {
         event.preventDefault();
@@ -75,15 +124,25 @@ const PlaceOrder = () => {
                     }
                     break;
                 case 'stripe':
-                    const responseStripe = await axios.post(backendUrl + '/api/order/stripe', orderData, { headers: { Authorization: `Bearer ${token}` } })
+                    const responseStripe = await axios.post(
+                        backendUrl + '/api/order/stripe',
+                        { ...orderData, frontendUrl: window.location.origin }, // ✅ yaha bhej rahe hain
+                        { headers: { Authorization: `Bearer ${token}` } }
+                    );
                     if (responseStripe.data.success) {
-                        const {session_url} = responseStripe.data;
-                        window.location.replace(session_url) 
-                    }   
-                    else{
-                        toast.error(responseStripe.data.message)
+                        const { session_url } = responseStripe.data;
+                        window.location.replace(session_url);
+                    } else {
+                        toast.error(responseStripe.data.message);
                     }
-                    break
+                    break;
+                case 'razorpay':
+                    const responseRazorpay = await axios.post(backendUrl + '/api/order/razorpay', orderData, { headers: { Authorization: `Bearer ${token}` } })
+                    if (responseRazorpay.data.success) {
+                        initPay(responseRazorpay.data.order) // ✅ fixed variable
+                    }
+
+                    break;
                 default:
                     break;
             }

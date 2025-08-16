@@ -3,12 +3,15 @@ import { ShopContext } from '../context/ShopContext'
 import Title from '../components/Title';
 import ProductItem from '../components/ProductItem';
 import { assets } from '../assets/assets';
+import Skeleton from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css';
 
 const Collection = () => {
 
     const { products,search,showSearch } = useContext(ShopContext);
     const [showFilter, setShowFilter] = useState(false);
     const [filterProducts, setFilterProducts] = useState([]);
+     const [loading, setLoading] = useState(true);
 
     const [category, setCategory] = useState([]);
     const [subCategory, setSubCategory] = useState([]);
@@ -80,7 +83,18 @@ const Collection = () => {
     }, [sortType])
     useEffect(() => {
         setFilterProducts(products)
+        setLoading(false);
     }, [products])
+
+    const renderSkeleton = () => {
+        return Array(8).fill(0).map((_, index) => (
+            <div key={index} className="border rounded p-3">
+                <Skeleton height={160} className="mb-3" />
+                <Skeleton width={`80%`} height={20} className="mb-1" />
+                <Skeleton width={`50%`} height={20} />
+            </div>
+        ))
+    }
     return (
         <div className="flex flex-col sm:flex-row gap-1 sm:gap-10 pt-10 border-1">
             {/* Filter Option */}
@@ -188,7 +202,7 @@ const Collection = () => {
                 </div>
                 {/* Map Products */}
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 gap-y-6">
-                    {filterProducts.map((item, index) => (
+                    {loading ? renderSkeleton() : filterProducts.map((item, index) => (
                         <ProductItem
                             key={index}
                             name={item.name}

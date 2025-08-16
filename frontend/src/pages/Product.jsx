@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom'
 import { ShopContext } from '../context/ShopContext';
 import { assets } from '../assets/assets';
 import RelatedProducts from '../components/RelatedProducts';
+import DeliveryInfo from '../components/DeliveryInfo';
 
 const Product = () => {
 
@@ -81,6 +82,8 @@ const Product = () => {
                         });
                         addToCart(productData._id, size, color);
                     }} className='bg-black text-white px-8 py-3 text-sm active:bg-gray-700'>ADD TO CART</button>
+                    <DeliveryInfo />
+
                     <hr className='mt-8 sm:w-4/5' />
                     <div className='text-sm text-gray-500 mt-5 flex flex-col gap-1'>
                         <p>100% Original product.</p>
@@ -96,8 +99,45 @@ const Product = () => {
                     <p className='border px-5 py-3 text-sm'>Reviews (122)</p>
                 </div>
                 <div className='flex flex-col gap-4 border px-6 py-6 text-sm text-gray-500'>
-                    <p>An e-commerce website is an online platform that facilitates the buying and selling of products or services over the internet. It serves as a virtual marketplace where businesses and individuals can showcase their products, interact with customers, and conduct transactions without the need for a physical presence. E-commerce websites have gained immense popularity due to their convenience, accessibility, and the global reach they offer.</p>
-                    <p>E-commerce websites typically display products or services along with detailed descriptions, images, prices, and any available variations (e.g., sizes, colors). Each product usually has its own dedicated page with relevant information.</p>
+                    <div className="product-description">
+                        <h2>✨ Divine Elegance for Your Laddu Gopal – Handcrafted Green & Gold Jutti</h2>
+                        <p>
+                            Add a touch of tradition and grace to your <b>Laddu Gopal’s attire</b> with this
+                            <b>exquisite handcrafted jutti</b>. Designed in vibrant <b>green and golden hues</b>,
+                            this footwear is beautifully adorned with sparkling stones, giving your deity a
+                            royal and festive look.
+                        </p>
+
+                        <p>
+                            Perfectly crafted for <b>Laddu Gopal ji idols</b>, this jutti enhances their
+                            appearance during <b>festivals, poojas, Janmashtami celebrations, or daily adornment</b>.
+                            The intricate detailing and premium fabric make it not just an accessory but a
+                            <b>symbol of love and devotion</b>.
+                        </p>
+
+                        <h3>🌟 Key Features:</h3>
+                        <ul>
+                            <li><b>Material:</b> High-quality fabric with fine stone embellishments.</li>
+                            <li><b>Design:</b> Traditional yet stylish, highlighted with golden embroidery and rhinestones.</li>
+                            <li><b>Size:</b> Available in multiple sizes to fit your Laddu Gopal idol perfectly.</li>
+                            <li><b>Occasion:</b> Suitable for daily puja, Janmashtami, Diwali, Holi, and other religious functions.</li>
+                            <li><b>Care Instructions:</b> Gently wipe with a soft, dry cloth to maintain shine and beauty.</li>
+                        </ul>
+
+                        <h3>🙏 Why Choose This Jutti?</h3>
+                        <ul>
+                            <li>Elevates the divine charm of your <b>Thakur ji / Laddu Gopal</b>.</li>
+                            <li>A <b>thoughtful gift</b> for devotees and spiritual occasions.</li>
+                            <li>Complements any <b>Laddu Gopal poshak or accessories</b> beautifully.</li>
+                        </ul>
+
+                        <p>
+                            ✨ Bring home this symbol of devotion and elegance, and let your
+                            <b>Laddu Gopal ji radiate divine beauty</b> every day!<br /><br />
+                            <b>Order Now</b> and complete your deity’s royal look with this elegant jutti.
+                        </p>
+                    </div>
+
                 </div>
             </div>
             {/* Display Related Products */}
