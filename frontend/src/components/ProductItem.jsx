@@ -23,11 +23,11 @@ const ProductItem = ({ id, image, name, price }) => {
     }
 
     return (
-        <Link className='text-gray-700 cursor-pointer relative block' to={`/product/${id}`}>
+        <Link className='product-card text-gray-700 cursor-pointer relative block' to={`/product/${id}`}>
             {/* Heart Icon */}
             <div
                 onClick={toggleWishlist}
-                className="absolute top-2 right-2 z-10 cursor-pointer"
+                className="absolute top-2 right-4 z-10 cursor-pointer"
             >
                 <svg
                     xmlns="http://www.w3.org/2000/svg"

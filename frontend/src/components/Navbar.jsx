@@ -39,7 +39,10 @@ const Navbar = () => {
             </ul>
 
             <div className='flex items-center gap-6'>
-                <img onClick={() => setShowSearch(true)} className='w-5 cursor-pointer' src={assets.search_icon} alt="search" />
+                <img onClick={() => {
+      navigate('/collection');   // sidha /collection pe le jao
+      setShowSearch(true);       // aur search box active karo
+  }}  className='w-5 cursor-pointer' src={assets.search_icon} alt="search" />
                 <div className='group relative'>
                     {/* <Link to="/login">
                     </Link> */}

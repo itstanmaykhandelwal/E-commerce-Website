@@ -93,5 +93,24 @@ const adminLogin = async (req, res) => {
         res.json({ success: false, message: err.message });
     }
 };
+// New: Get profile details
+const profileUser = async (req, res) => {
+    try {
+        if (!req.user || !req.user.id) {
+            return res
+                .status(401)
+                .json({ success: false, message: "User not authenticated" });
+        }
 
-export { loginUser, registerUser, adminLogin };
+        const user = await userModel.findById(req.user.id).select("-password"); // password removed
+        if (!user) {
+            return res.json({ success: false, message: "User not found" });
+        }
+        res.json({ success: true, user });
+    } catch (err) {
+        console.log(err);
+        res.json({ success: false, message: err.message });
+    }
+};
+
+export { loginUser, registerUser, adminLogin, profileUser };

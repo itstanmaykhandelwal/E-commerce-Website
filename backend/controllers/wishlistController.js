@@ -32,11 +32,11 @@ export const addToWishlist = async (req, res) => {
     }
 };
 
-// Remove from wishlist
+// Remove from wishlist (REST style)
 export const removeFromWishlist = async (req, res) => {
     try {
         const userId = req.user.id;
-        const { productId } = req.body;
+        const productId = req.params.id; // 👈 ab params se milega
 
         if (!productId) {
             return res.json({ success: false, message: "Product ID required" });

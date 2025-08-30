@@ -8,14 +8,19 @@ import 'react-loading-skeleton/dist/skeleton.css';
 
 const Collection = () => {
 
-    const { products,search,showSearch } = useContext(ShopContext);
+    const { products, search, showSearch } = useContext(ShopContext);
     const [showFilter, setShowFilter] = useState(false);
     const [filterProducts, setFilterProducts] = useState([]);
-     const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(true);
 
     const [category, setCategory] = useState([]);
     const [subCategory, setSubCategory] = useState([]);
     const [sortType, setSortType] = useState('relavent')
+
+    // pagination states
+    const [currentPage, setCurrentPage] = useState(1);
+    const productsPerPage = 3;
+
 
     const toggleCategory = (e) => {
         if (category.includes(e.target.value)) {
@@ -76,7 +81,7 @@ const Collection = () => {
     }
     useEffect(() => {
         applyFilter();
-    }, [category, subCategory,search,showSearch, products])
+    }, [category, subCategory, search, showSearch, products])
 
     useEffect(() => {
         sortProduct();
@@ -95,6 +100,12 @@ const Collection = () => {
             </div>
         ))
     }
+
+
+    const indexOfLastProduct = currentPage * productsPerPage;
+    const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
+    const currentProducts = filterProducts.slice(indexOfFirstProduct, indexOfLastProduct);
+    const totalPages = Math.ceil(filterProducts.length / productsPerPage);
     return (
         <div className="flex flex-col sm:flex-row gap-1 sm:gap-10 pt-10 border-1">
             {/* Filter Option */}
@@ -105,18 +116,14 @@ const Collection = () => {
                 >
                     FILTERS
                     <img
-                        className={`h-3 sm:hidden ${
-                            showFilter ? "rotate-90" : ""
-                        }`}
+                        className={`h-3 sm:hidden ${showFilter ? "rotate-90" : ""
+                            }`}
                         src={assets.dropdown_icon}
                         alt=""
                     />
                 </p>
-                <div
-                    className={`border border-gray-300 pl-5 py-3 mt-6 ${
-                        showFilter ? "" : "hidden"
-                    }`}
-                >
+                <div className={`border border-gray-300 pl-5 py-3 mt-6 ${showFilter ? "block" : "hidden"} sm:block`}>
+
                     <p className="mb-3 text-sm font-medium">CATEGORIES</p>
                     <div className="flex flex-col gap-2 text-sm font-light text-gray-700">
                         <p className="flex gap-2">
@@ -149,11 +156,8 @@ const Collection = () => {
                     </div>
                 </div>
                 {/* SubCategory Filter */}
-                <div
-                    className={`border border-gray-300 pl-5 py-3 mt-6 ${
-                        showFilter ? "" : "hidden"
-                    }`}
-                >
+                <div className={`border border-gray-300 pl-5 py-3 mt-6 ${showFilter ? "block" : "hidden"} sm:block`}>
+
                     <p className="mb-3 text-sm font-medium">TYPE</p>
                     <div className="flex flex-col gap-2 text-sm font-light text-gray-700">
                         <p className="flex gap-2">
@@ -202,7 +206,7 @@ const Collection = () => {
                 </div>
                 {/* Map Products */}
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 gap-y-6">
-                    {loading ? renderSkeleton() : filterProducts.map((item, index) => (
+                    {loading ? renderSkeleton() : currentProducts.map((item, index) => (
                         <ProductItem
                             key={index}
                             name={item.name}
@@ -212,6 +216,55 @@ const Collection = () => {
                         />
                     ))}
                 </div>
+                {totalPages > 1 && (
+                    <div className="flex justify-center mt-8 gap-2 flex-wrap">
+                        {(() => {
+                            const pages = [];
+                            const maxVisible = 5; // current ke around max 5 dikhayenge
+                            const addPage = (page) => {
+                                pages.push(
+                                    <button
+                                        key={page}
+                                        onClick={() => setCurrentPage(page)}
+                                        className={`px-3 py-1 border rounded ${currentPage === page
+                                                ? "bg-black text-white"
+                                                : "bg-white text-black"
+                                            }`}
+                                    >
+                                        {page}
+                                    </button>
+                                );
+                            };
+
+                            // Always show first page
+                            addPage(1);
+
+                            if (currentPage > 3) {
+                                pages.push(<span key="start-ellipsis">...</span>);
+                            }
+
+                            // Middle pages
+                            let start = Math.max(2, currentPage - 1);
+                            let end = Math.min(totalPages - 1, currentPage + 1);
+
+                            for (let i = start; i <= end; i++) {
+                                addPage(i);
+                            }
+
+                            if (currentPage < totalPages - 2) {
+                                pages.push(<span key="end-ellipsis">...</span>);
+                            }
+
+                            // Always show last page (if more than 1)
+                            if (totalPages > 1) {
+                                addPage(totalPages);
+                            }
+
+                            return pages;
+                        })()}
+                    </div>
+                )}
+
             </div>
         </div>
     );
