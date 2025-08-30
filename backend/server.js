@@ -14,6 +14,7 @@ import http from "http";
 import faqRouter from "./routes/faqRoute.js";
 import faqs from "./data/faqData.js"; // faqData import kar lo
 import Product from "./models/productModel.js";
+import contactRouter from "./routes/contactRoute.js";
 
 // App Config
 const app = express();
@@ -33,6 +34,7 @@ app.use("/api/order", orderRouter);
 app.use("/api/wishlist", wishRouter);
 app.use("/api/review", reviewRouter);
 app.use("/api/faq", faqRouter);
+app.use("/api/contact", contactRouter);
 
 // API test endpoint
 app.get("/", (req, res) => {

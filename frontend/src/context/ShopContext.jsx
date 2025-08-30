@@ -17,9 +17,10 @@ const ShopContextProvider = (props) => {
     const [showSearch, setShowSearch] = useState(false);
     const [wishlist, setWishlist] = useState([]);
     const [reviews, setReviews] = useState([]);
-
-    // 🧩 NEW: currentUser state (JWT se nikal ke set karenge)
     const [currentUser, setCurrentUser] = useState(null);
+    const [contacts, setContacts] = useState([]); // optional: admin ke liye
+    const [contactLoading, setContactLoading] = useState(false);
+
     const [profile, setProfile] = useState(null);
     const [profileLoading, setProfileLoading] = useState(false);
 
@@ -383,7 +384,31 @@ const ShopContextProvider = (props) => {
             toast.error(err.message);
         }
     };
+    // Submit contact form
+    const submitContact = async ({ name, email, subject, message }) => {
+        if (!name || !email || !subject || !message) {
+            toast.error("All fields are required");
+            return;
+        }
 
+        try {
+            setContactLoading(true);
+            const response = await axios.post(`${backendUrl}/api/contact/submit`, {
+                name, email, subject, message
+            });
+
+            if (response.data.success) {
+                toast.success(response.data.message);
+            } else {
+                toast.error(response.data.message);
+            }
+        } catch (err) {
+            console.log(err);
+            toast.error(err.message);
+        } finally {
+            setContactLoading(false);
+        }
+    };
 
     useEffect(() => {
         getProductsData();
@@ -447,7 +472,9 @@ const ShopContextProvider = (props) => {
         chatMessages,
         socket,
         setChatMessages,
-
+        contacts,
+        contactLoading,
+        submitContact,
     };
 
     return (

@@ -56,14 +56,14 @@ const ChatBot = () => {
             {/* Toggle Button */}
             <button
                 onClick={() => setOpen(!open)}
-                className="bg-blue-600 text-white px-4 py-2 rounded-full shadow-lg hover:bg-blue-700"
+                className="bg-black text-white px-4 py-2 rounded-full shadow-lg hover:bg-black-700"
             >
                 {open ? "Close Chat" : "Chat"}
             </button>
 
             {open && (
                 <div className="w-80 h-96 bg-white shadow-xl rounded-lg mt-2 flex flex-col overflow-hidden">
-                    <div className="bg-blue-600 text-white px-4 py-2 font-semibold">
+                    <div className="bg-black text-white px-4 py-2 font-semibold">
                         ChatBot
                     </div>
 
@@ -105,7 +105,7 @@ const ChatBot = () => {
                         />
                         <button
                             onClick={sendMessage}
-                            className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
+                            className="bg-black text-white px-3 py-1 rounded hover:bg-black-700"
                         >
                             Send
                         </button>

@@ -39,26 +39,26 @@ const faqs = [
         keywords: ["cancel", "order", "change"],
         answer: "Orders can be canceled within 12 hours of placement.",
     },
-    {
-        question: "How do I apply a coupon?",
-        keywords: ["coupon", "discount", "apply"],
-        answer: "You can apply the coupon code at checkout.",
-    },
+    // {
+    //     question: "How do I apply a coupon?",
+    //     keywords: ["coupon", "discount", "apply"],
+    //     answer: "You can apply the coupon code at checkout.",
+    // },
     {
         question: "Are your products authentic?",
         keywords: ["authentic", "genuine", "original"],
         answer: "Yes, all products are 100% authentic.",
     },
-    {
-        question: "Do you offer gift wrapping?",
-        keywords: ["gift", "wrapping", "present"],
-        answer: "Yes, gift wrapping is available at an extra charge.",
-    },
-    {
-        question: "Can I change the delivery address?",
-        keywords: ["change", "address", "delivery"],
-        answer: "You can update the address within 6 hours of placing the order.",
-    },
+    // {
+    //     question: "Do you offer gift wrapping?",
+    //     keywords: ["gift", "wrapping", "present"],
+    //     answer: "Yes, gift wrapping is available at an extra charge.",
+    // },
+    // {
+    //     question: "Can I change the delivery address?",
+    //     keywords: ["change", "address", "delivery"],
+    //     answer: "You can update the address within 6 hours of placing the order.",
+    // },
     {
         question: "How do I contact customer support?",
         keywords: ["support", "contact", "help"],
@@ -84,26 +84,26 @@ const faqs = [
         keywords: ["pre-order", "upcoming", "product"],
         answer: "Yes, pre-order options will be shown on product pages when available.",
     },
-    {
-        question: "Are there any loyalty points?",
-        keywords: ["loyalty", "points", "rewards"],
-        answer: "Yes, you earn points for every purchase that can be redeemed later.",
-    },
+    // {
+    //     question: "Are there any loyalty points?",
+    //     keywords: ["loyalty", "points", "rewards"],
+    //     answer: "Yes, you earn points for every purchase that can be redeemed later.",
+    // },
     {
         question: "How do I edit my profile?",
         keywords: ["edit", "profile", "account"],
-        answer: "You can update your profile information in the 'My Account' section.",
+        answer: "You can update your profile information in the 'My Profile' section.",
     },
     {
         question: "Do you offer same-day delivery?",
         keywords: ["same day", "express", "delivery"],
         answer: "Same-day delivery is available in selected cities.",
     },
-    {
-        question: "Can I get notifications for new products?",
-        keywords: ["notification", "new", "products", "alert"],
-        answer: "Yes, enable notifications in your account settings to stay updated.",
-    },
+    // {
+    //     question: "Can I get notifications for new products?",
+    //     keywords: ["notification", "new", "products", "alert"],
+    //     answer: "Yes, enable notifications in your account settings to stay updated.",
+    // },
 ];
 
 export default faqs;
