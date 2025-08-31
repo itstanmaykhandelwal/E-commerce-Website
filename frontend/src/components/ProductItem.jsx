@@ -1,11 +1,12 @@
 import React, { useContext } from 'react'
 import { ShopContext } from '../context/ShopContext'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify';
 import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
 
 const ProductItem = ({ id, image, name, price }) => {
     const { currency, wishlist, addToWishlist, removeFromWishlist, token } = useContext(ShopContext);
+    const navigate = useNavigate();
 
     const isInWishlist = wishlist.some(item => item._id === id);
 
@@ -22,7 +23,7 @@ const ProductItem = ({ id, image, name, price }) => {
     }
 
     return (
-        <Link className='product-card text-gray-700 cursor-pointer relative block' to={`/product/${id}`}>
+        <div  onClick={() => navigate(`/product/${id}`)} className='product-card text-gray-700 cursor-pointer relative block' to={`/product/${id}`}>
             {/* Heart Icon */}
             <div
                 onClick={toggleWishlist}
@@ -43,9 +44,11 @@ const ProductItem = ({ id, image, name, price }) => {
                     alt={name}
                 />
             </div>
-            <p className='pt-3 pb-1 text-sm'>{name}</p>
+            <div className='p-2'>
+                <p className='pt-2 pb-1 text-sm'>{name}</p>
             <p className='text-sm font-medium'>{currency}{price}</p>
-        </Link>
+            </div>
+        </div>
     )
 }
 

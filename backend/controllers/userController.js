@@ -75,6 +75,38 @@ const registerUser = async (req, res) => {
     }
 };
 
+// Route: Update profile
+const updateProfile = async (req, res) => {
+    try {
+        if (!req.user || !req.user.id) {
+            return res
+                .status(401)
+                .json({ success: false, message: "Not authenticated" });
+        }
+
+        const { name, email } = req.body;
+        if (!name || !email) {
+            return res.json({
+                success: false,
+                message: "Name and Email are required",
+            });
+        }
+
+        const updatedUser = await userModel
+            .findByIdAndUpdate(
+                req.user.id,
+                { name, email },
+                { new: true, runValidators: true }
+            )
+            .select("-password");
+
+        res.json({ success: true, user: updatedUser });
+    } catch (err) {
+        console.log(err);
+        res.json({ success: false, message: err.message });
+    }
+};
+
 // Route for admin login
 const adminLogin = async (req, res) => {
     try {
@@ -113,4 +145,38 @@ const profileUser = async (req, res) => {
     }
 };
 
-export { loginUser, registerUser, adminLogin, profileUser };
+const changePassword = async (req, res) => {
+    try {
+        const userId = req.user.id; // JWT middleware se aayega
+        const { oldPassword, newPassword } = req.body;
+
+        const user = await userModel.findById(userId);
+        if (!user)
+            return res
+                .status(404)
+                .json({ success: false, message: "User not found" });
+
+        const isMatch = await bcrypt.compare(oldPassword, user.password);
+        if (!isMatch)
+            return res
+                .status(400)
+                .json({ success: false, message: "Old password is incorrect" });
+
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        user.password = hashedPassword;
+        await user.save();
+
+        res.json({ success: true, message: "Password updated successfully" });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+};
+
+export {
+    loginUser,
+    registerUser,
+    adminLogin,
+    profileUser,
+    updateProfile,
+    changePassword,
+};

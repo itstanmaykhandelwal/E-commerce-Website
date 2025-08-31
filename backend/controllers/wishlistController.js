@@ -4,7 +4,7 @@ import userModel from "../models/userModel.js";
 // Add to wishlist
 export const addToWishlist = async (req, res) => {
     try {
-        const userId = req.user.id; // token se aaya hoga
+        const userId = req.user.id;
         const { productId } = req.body;
 
         if (!productId) {
@@ -22,6 +22,9 @@ export const addToWishlist = async (req, res) => {
         user.wishlist.push(productId);
         await user.save();
 
+        // ✅ Populate after save
+        await user.populate("wishlist");
+
         res.json({
             success: true,
             message: "Added to wishlist",
@@ -32,11 +35,11 @@ export const addToWishlist = async (req, res) => {
     }
 };
 
-// Remove from wishlist (REST style)
+// Remove from wishlist
 export const removeFromWishlist = async (req, res) => {
     try {
         const userId = req.user.id;
-        const productId = req.params.id; // 👈 ab params se milega
+        const productId = req.params.id;
 
         if (!productId) {
             return res.json({ success: false, message: "Product ID required" });
@@ -50,6 +53,9 @@ export const removeFromWishlist = async (req, res) => {
             (id) => id.toString() !== productId
         );
         await user.save();
+
+        // ✅ Populate after save
+        await user.populate("wishlist");
 
         res.json({
             success: true,

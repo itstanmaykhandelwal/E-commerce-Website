@@ -4,6 +4,7 @@ import Title from '../components/Title';
 import { assets } from '../assets/assets';
 import CartTotal from '../components/CartTotal';
 import { toast } from 'react-toastify';
+import RippleButton from '../components/RippleButton';
 
 const Cart = () => {
     const { products, currency, cartItems, updateQuantity, navigate, token } = useContext(ShopContext);
@@ -42,12 +43,11 @@ const Cart = () => {
                     <p className="text-lg text-gray-600 mb-4">
                         Your cart is empty. Add some products to continue shopping.
                     </p>
-                    <button
+                    <RippleButton
                         onClick={() => navigate("/collection")}
-                        className="bg-black text-white px-6 py-3 rounded-md text-sm hover:bg-gray-800"
                     >
-                        Add Products
-                    </button>
+                        ADD PRODUCTS
+                    </RippleButton>
                 </div>
             ) : (
                 <>
@@ -74,7 +74,7 @@ const Cart = () => {
                                             </div>
                                         </div>
                                     </div>
-                                    <input
+                                    {/* <input
                                         onChange={(e) =>
                                             e.target.value === "" || e.target.value === '0'
                                                 ? null
@@ -84,7 +84,28 @@ const Cart = () => {
                                         className='border max-w-10 sm:max-w-20 px-1 sm:px-2 py-1'
                                         min={1}
                                         defaultValue={item.quantity}
-                                    />
+                                    /> */}
+                                    {/* 🔹 Quantity with + and - buttons */}
+                                    <div className="flex items-center gap-2">
+                                        <button
+                                            onClick={() =>
+                                                item.quantity > 1 &&
+                                                updateQuantity(item._id, item.size, item.color, item.quantity - 1)
+                                            }
+                                            className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
+                                        >
+                                            -
+                                        </button>
+                                        <span className="px-3">{item.quantity}</span>
+                                        <button
+                                            onClick={() =>
+                                                updateQuantity(item._id, item.size, item.color, item.quantity + 1)
+                                            }
+                                            className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
+                                        >
+                                            +
+                                        </button>
+                                    </div>
                                     <img
                                         onClick={() => updateQuantity(item._id, item.size, item.color, 0)}
                                         src={assets.bin_icon}
@@ -100,8 +121,8 @@ const Cart = () => {
                     <div className='flex justify-end my-20'>
                         <div className="w-full sm:w-[450px]">
                             <CartTotal />
-                            <div className='w-full text-end'>
-                                <button
+                            <div className='w-full text-end mt-3'>
+                                <RippleButton
                                     onClick={() => {
                                         if (cartData.length === 0) {
                                             toast.error("Product is not available in cart");
@@ -112,10 +133,9 @@ const Cart = () => {
                                             navigate("/place-order");
                                         }
                                     }}
-                                    className='bg-black text-white text-sm my-8 px-8 py-3'
                                 >
                                     PROCEED TO CHECKOUT
-                                </button>
+                                </RippleButton>
                             </div>
                         </div>
                     </div>

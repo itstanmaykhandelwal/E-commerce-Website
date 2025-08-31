@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import { ShopContext } from '../context/ShopContext';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import RippleButton from '../components/RippleButton';
 
 const Login = () => {
 
@@ -60,7 +61,7 @@ const Login = () => {
                     : <p className='cursor-pointer'>Already have an account? <span onClick={()=>setCurrentState("Login")}>Login</span></p>
                 }
             </div>
-            <button className='bg-black text-white font-light px-7 py-2 mt-4'>{currentState ==="Login"?"Sign In":"Sign Up"}</button>
+            <RippleButton className='mt-4'>{currentState ==="Login"?"Sign In":"Sign Up"}</RippleButton>
         </form>
     )
 }

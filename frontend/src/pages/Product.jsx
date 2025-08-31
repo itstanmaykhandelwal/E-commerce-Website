@@ -5,6 +5,7 @@ import RelatedProducts from '../components/RelatedProducts';
 import DeliveryInfo from '../components/DeliveryInfo';
 import { FaStar } from "react-icons/fa";
 import { toast } from 'react-toastify';
+import RippleButton from '../components/RippleButton';
 
 const Product = () => {
     const { productId } = useParams();
@@ -32,6 +33,8 @@ const Product = () => {
     const [hover, setHover] = useState(null);
     const [reviewText, setReviewText] = useState("");
     const [editingReviewId, setEditingReviewId] = useState(null);
+    const [closingModal, setClosingModal] = useState(false);
+
 
     const fetchProductData = () => {
         products.map((item) => {
@@ -74,6 +77,16 @@ const Product = () => {
             console.error(err);
             toast.error("Failed to submit review");
         }
+    };
+    const handleCloseModal = () => {
+        setClosingModal(true);
+        setTimeout(() => {
+            setShowReviewModal(false);
+            setClosingModal(false);
+            setEditingReviewId(null);
+            setRating(0);
+            setReviewText('');
+        }, 300); // animation duration
     };
 
     // average rating
@@ -159,28 +172,34 @@ const Product = () => {
                         </div>
                     </div>
 
-                    <button
+                    {/* <button
                         onClick={() => addToCart(productData._id, size, color)}
                         className='bg-black text-white px-8 py-3 text-sm active:bg-gray-700'
                     >
                         ADD TO CART
-                    </button>
+                    </button> */}
+                    <RippleButton onClick={() => addToCart(productData._id, size, color)}>
+                        ADD TO CART
+                    </RippleButton>
 
                     <DeliveryInfo />
 
                     <hr className='mt-8 sm:w-4/5' />
-                    <div className='text-sm text-gray-500 mt-5 flex flex-col gap-1'>
+                    <div className='text-sm text-gray-500 mt-5 mb-3 flex flex-col gap-1'>
                         <p>100% Original product.</p>
                         <p>Cash on delivery is available on this product.</p>
                         <p>Easy return and exchange policy within 7 days.</p>
                     </div>
 
-                    <button
+                    {/* <button
                         onClick={() => setShowReviewModal(true)}
                         className="mt-5 bg-orange-500 text-white px-6 py-2 rounded"
                     >
                         Write a Review
-                    </button>
+                    </button> */}
+                    <RippleButton onClick={() => setShowReviewModal(true)}>
+                        WRITE A REVIEW
+                    </RippleButton>
                 </div>
             </div>
 
@@ -261,9 +280,13 @@ const Product = () => {
             />
 
             {/* Review Modal */}
-            {showReviewModal && (
-                <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50">
-                    <div className="bg-white p-6 rounded-lg w-[400px] shadow-lg">
+            {(showReviewModal || closingModal) && (
+                <div className={`fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 
+    transition-opacity duration-300 ease-out 
+    ${closingModal ? "animate-fadeOut" : "animate-fadeIn"}`}>
+                    <div className={`bg-white p-6 rounded-lg w-[400px] shadow-lg 
+        transform transition-all duration-300 ease-out 
+        ${closingModal ? "animate-scaleOut" : "animate-scaleIn"}`}>
                         <h2 className="text-lg font-semibold mb-4">
                             {editingReviewId ? 'Edit your Review' : 'Write a Review'}
                         </h2>
@@ -294,26 +317,22 @@ const Product = () => {
 
                         <div className="flex justify-end gap-3">
                             <button
-                                onClick={() => {
-                                    setShowReviewModal(false);
-                                    setEditingReviewId(null);
-                                    setRating(0);
-                                    setReviewText('');
-                                }}
+                                onClick={handleCloseModal}
                                 className="px-4 py-2 border rounded"
                             >
                                 Cancel
                             </button>
-                            <button
+                            <RippleButton
                                 onClick={submitReview}
-                                className="px-4 py-2 bg-orange-500 text-white rounded"
+                                // className="px-4 py-2 bg-orange-500 text-white rounded"
                             >
                                 Submit
-                            </button>
+                            </RippleButton>
                         </div>
                     </div>
                 </div>
             )}
+
         </div>
     ) : <div className='opacity-0'></div>;
 };

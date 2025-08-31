@@ -1,15 +1,23 @@
 // components/ChatBot.jsx
 import { useState, useEffect, useRef } from "react";
 import { io } from "socket.io-client";
+import { useLocation } from "react-router-dom";  // 👈 add this
+import RippleButton from "./RippleButton";
 
-const socket = io(import.meta.env.VITE_BACKEND_URL); // backend socket URL
+const socket = io(import.meta.env.VITE_BACKEND_URL);
 
 const ChatBot = () => {
     const [open, setOpen] = useState(false);
     const [messages, setMessages] = useState([]);
-    const [input, setInput] = useState("Hii"); // initial input
+    const [input, setInput] = useState("Hii");
     const [relatedCards, setRelatedCards] = useState([]);
     const messagesEndRef = useRef(null);
+    const location = useLocation();  // 👈 track current route
+
+    // ✅ Close chatbot on route change
+    useEffect(() => {
+        setOpen(false);
+    }, [location]);
 
     // Scroll to bottom on new message
     useEffect(() => {
@@ -20,7 +28,6 @@ const ChatBot = () => {
     useEffect(() => {
         socket.on("bot message", (data) => {
             setMessages((prev) => [...prev, { sender: "bot", text: data.answer }]);
-            // filter out questions already sent by user
             const filteredCards = (data.relatedQuestions || []).filter(
                 q => !messages.some(msg => msg.sender === "user" && msg.text.toLowerCase() === q.toLowerCase())
             );
@@ -33,21 +40,18 @@ const ChatBot = () => {
     const sendMessage = () => {
         if (!input.trim()) return;
 
-        // prevent duplicate user messages
         if (!messages.some(msg => msg.sender === "user" && msg.text.toLowerCase() === input.toLowerCase())) {
             setMessages(prev => [...prev, { sender: "user", text: input }]);
-            socket.emit("user message", input); // backend se reply aayega
+            socket.emit("user message", input);
         }
 
-        setInput(""); // clear input
+        setInput("");
     };
 
     const handleCardClick = (question) => {
         const userMessages = messages.filter(m => m.sender === "user").map(m => m.text);
-
         setMessages((prev) => [...prev, { sender: "user", text: question }]);
         socket.emit("user message", question, userMessages);
-
         setRelatedCards([]);
     };
 
@@ -77,7 +81,6 @@ const ChatBot = () => {
                             </div>
                         ))}
 
-                        {/* Related question cards */}
                         {relatedCards.length > 0 && (
                             <div className="mt-2 flex flex-wrap gap-2">
                                 {relatedCards.map((q, idx) => (
@@ -103,12 +106,12 @@ const ChatBot = () => {
                             placeholder="Type a message..."
                             onKeyDown={(e) => e.key === "Enter" && sendMessage()}
                         />
-                        <button
+                        <RippleButton
                             onClick={sendMessage}
-                            className="bg-black text-white px-3 py-1 rounded hover:bg-black-700"
+                            // className="bg-black text-white px-3 py-1 rounded hover:bg-black-700"
                         >
                             Send
-                        </button>
+                        </RippleButton>
                     </div>
                 </div>
             )}
