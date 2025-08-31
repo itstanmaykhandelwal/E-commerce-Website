@@ -57,7 +57,7 @@ const Orders = ({ token }) => {
                             }`}
                     >
                         {/* Parcel Icon */}
-                        <img className='w-12' src={assets.parcel_icon} alt="" />
+                        <img className='w-12' src={assets.parcel_icon} alt="parcel-img" />
 
                         {/* Items & Address */}
                         <div>

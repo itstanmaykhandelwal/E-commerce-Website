@@ -17,7 +17,7 @@ const LatestCollection = () => {
             <div className="text-center py-8 text-3xl">
                 <Title text1={'LATEST'} text2={'COLLECTIONS'} />
                 <p className='w-3/4 m-auto text-xs sm:text-sm md:text-base'>
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                    Shop the latest collection of Krishna Ji Poshaks, Laddu Gopal dresses, and devotional attire – perfect for festivals and daily worship.
                 </p>
             </div>
             {/* Rendering Products */}

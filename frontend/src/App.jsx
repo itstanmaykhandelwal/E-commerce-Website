@@ -17,6 +17,7 @@ import Verify from './pages/Verify'
 import Wishlist from './pages/Wishlist'
 import Profile from './pages/Profile'
 import ChatBot from './components/ChatBot'
+import About from './pages/About'
 
 const App = () => {
     return (
@@ -28,6 +29,7 @@ const App = () => {
                 <Route path="/" element={<Home />} />
                 <Route path="/collection" element={<Collection />} />
                 <Route path="/contact" element={<Contact />} />
+                <Route path="/about" element={<About />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/cart" element={<Cart />} />
                 <Route path="/wishlist" element={<Wishlist />} />

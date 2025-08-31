@@ -11,7 +11,7 @@ const Navbar = () => {
     const logout = () => {
         navigate('/login')
         localStorage.removeItem('token')
-        localStorage.removeItem('cartItems') 
+        localStorage.removeItem('cartItems')
         setToken('')
         // setCartItem({})
         setCartItems({});
@@ -20,7 +20,7 @@ const Navbar = () => {
 
     return (
         <div className='flex items-center justify-between py-5 font-medium'>
-            <Link to="/"><img src={assets.logo} className='w-36' alt="logo" /></Link>
+            <Link to="/"><img src={assets.logo} className='w-20 h-20' alt="logo" /></Link>
             <ul className='hidden sm:flex gap-5 text-sm text-gray-700'>
                 <NavLink to="/" className="flex flex-col items-center gap-1">
                     <p>Home</p>
@@ -42,9 +42,9 @@ const Navbar = () => {
 
             <div className='flex items-center gap-6'>
                 <img onClick={() => {
-      navigate('/collection');   // sidha /collection pe le jao
-      setShowSearch(true);       // aur search box active karo
-  }}  className='w-5 cursor-pointer' src={assets.search_icon} alt="search" />
+                    navigate('/collection');   // sidha /collection pe le jao
+                    setShowSearch(true);       // aur search box active karo
+                }} className='w-5 cursor-pointer' src={assets.search_icon} alt="search" />
                 <div className='group relative'>
                     {/* <Link to="/login">
                     </Link> */}
@@ -68,7 +68,7 @@ const Navbar = () => {
             <div className={`absolute top-0 right-0 bottom-0 overflow-hidden bg-white transition-all ${visible ? "w-full" : "w-0"}`}>
                 <div className='flex flex-col text-gray-600'>
                     <div onClick={() => setVisible(false)} className='flex items-center gap-4 p-3 cursor-pointer'>
-                        <img className='h-4 rotate-180' src={assets.dropdown_icon} alt="" />
+                        <img className='h-4 rotate-180' src={assets.dropdown_icon} alt="dropdown_icon" />
                         <p>Back</p>
                     </div>
                     <NavLink onClick={() => setVisible(false)} className='py-2 pl-6 border' to='/'>HOME</NavLink>

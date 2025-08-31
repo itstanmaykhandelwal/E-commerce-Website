@@ -19,7 +19,7 @@ const Collection = () => {
 
     // pagination states
     const [currentPage, setCurrentPage] = useState(1);
-    const productsPerPage = 3;
+    const productsPerPage = 9;
 
 
     const toggleCategory = (e) => {
@@ -119,7 +119,7 @@ const Collection = () => {
                         className={`h-3 sm:hidden ${showFilter ? "rotate-90" : ""
                             }`}
                         src={assets.dropdown_icon}
-                        alt=""
+                        alt="dropdown-icon"
                     />
                 </p>
                 <div className={`border border-gray-300 pl-5 py-3 mt-6 ${showFilter ? "block" : "hidden"} sm:block`}>
