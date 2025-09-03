@@ -7,6 +7,7 @@ const userSchema = new mongoose.Schema(
         password: { type: String, required: true },
         cartData: { type: mongoose.Schema.Types.Mixed, default: {} }, // ✅ cart ke liye
         wishlist: [{ type: mongoose.Schema.Types.ObjectId, ref: "product" }], // ✅ wishlist ke liye array of product IDs
+        isNewUserDiscount: { type: Boolean, default: true }
     },
     { minimize: false }
 );

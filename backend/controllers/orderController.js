@@ -50,11 +50,21 @@ const placeOrder = async (req, res) => {
         const { items, amount, address } = req.body;
         const userId = req.user.id;
 
+        const user = await userModel.findById(userId);
+
+        // 👇 Discount logic
+        let finalAmount = amount;
+        if (user.isNewUserDiscount) {
+            finalAmount = Math.floor(amount * 0.9);
+            user.isNewUserDiscount = false;
+            await user.save();
+        }
+
         const orderData = {
             userId,
             items,
             address,
-            amount,
+            amount: finalAmount, // ✅ ab DB me sahi value save hogi
             paymentMethod: "COD",
             payment: false,
             date: Date.now(),
@@ -65,8 +75,7 @@ const placeOrder = async (req, res) => {
 
         await userModel.findByIdAndUpdate(userId, { cartData: {} });
 
-        // ✅ Mail bhej
-        const user = await userModel.findById(userId);
+        // ✅ Mail bhejna
         await sendOrderMail(user, newOrder);
 
         res.json({ success: true, message: "Order Placed & Email Sent" });
@@ -130,7 +139,12 @@ const placeOrderStripped = async (req, res) => {
 const verifyStripe = async (req, res) => {
     const { orderId, success } = req.body;
     const userId = req.user.id;
-
+    let finalAmount = amount;
+    if (user.isNewUserDiscount) {
+        finalAmount = Math.floor(amount * 0.9);
+        user.isNewUserDiscount = false;
+        await user.save();
+    }
     try {
         if (success === "true") {
             await orderModel.findByIdAndUpdate(orderId, { payment: true });
@@ -151,6 +165,13 @@ const placeOrderRazorpay = async (req, res) => {
     try {
         const { items, amount, address } = req.body; // frontend se frontendUrl bhejo
         const userId = req.user.id;
+
+        let finalAmount = amount;
+        if (user.isNewUserDiscount) {
+            finalAmount = Math.floor(amount * 0.9);
+            user.isNewUserDiscount = false;
+            await user.save();
+        }
 
         const orderData = {
             userId,
@@ -187,6 +208,13 @@ const verifyRazorpay = async (req, res) => {
         const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
             req.body;
         const userId = req.user.id;
+
+        let finalAmount = amount;
+        if (user.isNewUserDiscount) {
+            finalAmount = Math.floor(amount * 0.9);
+            user.isNewUserDiscount = false;
+            await user.save();
+        }
 
         const key_secret = process.env.RAZORPAY_KEY_SECRET;
 
@@ -284,7 +312,9 @@ const sendOrderMail = async (user, order) => {
               .map((item) => `<li>${item.name} x ${item.quantity}</li>`)
               .join("")}
         </ul>
-        <p>Delivery Address: ${order.address.street}, ${order.address.city}, ${order.address.state}, ${order.address.zipcode}</p>
+        <p>Delivery Address: ${order.address.street}, ${order.address.city}, ${
+                order.address.state
+            }, ${order.address.zipcode}</p>
       `,
         };
 

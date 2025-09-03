@@ -47,27 +47,38 @@ const App = () => {
     }
 
     return (
-        <div className='px-4 sm:px-[5vw] md:px-[7vw] lg:px[9vw]'>
-            <ToastContainer />
-            <Navbar />
-            <SearchBar />
-            <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/collection" element={<Collection />} />
-                <Route path="/contact" element={<Contact />} />
-                <Route path="/about" element={<About />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/cart" element={<Cart />} />
-                <Route path="/wishlist" element={<Wishlist />} />
-                <Route path="/orders" element={<Orders />} />
-                <Route path="/verify" element={<Verify />} />
-                <Route path="/profile" element={<Profile />} />
-                <Route path="/place-order" element={<PlaceOrder />} />
-                <Route path="/product/:productId" element={<Product />} />
-            </Routes>
-            <ChatBot />
-            <Footer />
-        </div>
+        <>
+            <marquee
+                behavior="scroll"
+                direction="left"
+                scrollamount="6"
+                className="bg-#f6f6f6 text-grey py-2 text-sm font-medium"
+            >
+                🎉 Limited Offer! Get <span className="text-yellow-400 font-bold">10% OFF</span> on your first order. Hurry up!
+            </marquee>
+            <div className='px-4 sm:px-[5vw] md:px-[7vw] lg:px[9vw]'>
+                <ToastContainer />
+
+                <Navbar />
+                <SearchBar />
+                <Routes>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/collection" element={<Collection />} />
+                    <Route path="/contact" element={<Contact />} />
+                    <Route path="/about" element={<About />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/cart" element={<Cart />} />
+                    <Route path="/wishlist" element={<Wishlist />} />
+                    <Route path="/orders" element={<Orders />} />
+                    <Route path="/verify" element={<Verify />} />
+                    <Route path="/profile" element={<Profile />} />
+                    <Route path="/place-order" element={<PlaceOrder />} />
+                    <Route path="/product/:productId" element={<Product />} />
+                </Routes>
+                <ChatBot />
+                <Footer />
+            </div>
+        </>
     )
 }
 
