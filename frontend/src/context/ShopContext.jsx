@@ -3,13 +3,12 @@ import { createContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { io } from "socket.io-client";
-import axios from 'axios';
+import axios from "axios";
 
 export const ShopContext = createContext();
 
 const ShopContextProvider = (props) => {
-
-    const currency = '₹';
+    const currency = "₹";
     const delivery_fee = 10;
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -39,13 +38,17 @@ const ShopContextProvider = (props) => {
     // 🧩 NEW: helper to decode JWT (base64url)
     const parseJwt = (tkn) => {
         try {
-            const base = tkn.split('.')[1];
-            const base64 = base.replace(/-/g, '+').replace(/_/g, '/');
+            const base = tkn.split(".")[1];
+            const base64 = base.replace(/-/g, "+").replace(/_/g, "/");
             const jsonPayload = decodeURIComponent(
                 atob(base64)
-                    .split('')
-                    .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-                    .join('')
+                    .split("")
+                    .map(
+                        (c) =>
+                            "%" +
+                            ("00" + c.charCodeAt(0).toString(16)).slice(-2),
+                    )
+                    .join(""),
             );
             return JSON.parse(jsonPayload);
         } catch (e) {
@@ -66,13 +69,17 @@ const ShopContextProvider = (props) => {
             const response = await axios.post(
                 `${backendUrl}/api/user/profile`,
                 {},
-                { headers: { Authorization: `Bearer ${jwtToken}` } }
+                { headers: { Authorization: `Bearer ${jwtToken}` } },
             );
 
             if (response.data.success) {
                 const user = response.data.user;
                 setProfile(user);
-                setCurrentUser({ _id: user._id, name: user.name, email: user.email });
+                setCurrentUser({
+                    _id: user._id,
+                    name: user.name,
+                    email: user.email,
+                });
             } else {
                 setProfile(null);
                 setCurrentUser(null);
@@ -90,7 +97,7 @@ const ShopContextProvider = (props) => {
 
     // Load token from localStorage once
     useEffect(() => {
-        const localToken = localStorage.getItem('token');
+        const localToken = localStorage.getItem("token");
         if (localToken) {
             setToken(localToken);
             fetchProfile(localToken); // fetch profile immediately
@@ -111,11 +118,9 @@ const ShopContextProvider = (props) => {
                 payload?.user?.id ||
                 null;
 
-            const name =
-                payload?.name || payload?.user?.name || null;
+            const name = payload?.name || payload?.user?.name || null;
 
-            const email =
-                payload?.email || payload?.user?.email || null;
+            const email = payload?.email || payload?.user?.email || null;
 
             if (uid) {
                 setCurrentUser({ _id: uid, name, email });
@@ -129,11 +134,11 @@ const ShopContextProvider = (props) => {
 
     const addToCart = async (itemId, size, color) => {
         if (!size) {
-            toast.error('Select Product Size');
+            toast.error("Select Product Size");
             return;
         }
         if (!color) {
-            toast.error('Select Product Color');
+            toast.error("Select Product Color");
             return;
         }
 
@@ -153,18 +158,20 @@ const ShopContextProvider = (props) => {
 
         setCartItems(cartData);
 
+        // If logged in → sync with backend
         if (token) {
             try {
                 await axios.post(
-                    backendUrl + '/api/cart/add',
+                    backendUrl + "/api/cart/add",
                     { itemId, size, color },
-                    { headers: { Authorization: `Bearer ${token}` } }
+                    { headers: { Authorization: `Bearer ${token}` } },
                 );
             } catch (error) {
                 console.log(error);
-                toast.error(error.message);
             }
         }
+
+        toast.success("Item added to cart");
     };
 
     const getCartCount = () => {
@@ -197,9 +204,9 @@ const ShopContextProvider = (props) => {
         if (token) {
             try {
                 await axios.post(
-                    backendUrl + '/api/cart/update',
+                    backendUrl + "/api/cart/update",
                     { itemId, size, color, quantity },
-                    { headers: { Authorization: `Bearer ${token}` } }
+                    { headers: { Authorization: `Bearer ${token}` } },
                 );
             } catch (error) {
                 console.log(error);
@@ -228,7 +235,7 @@ const ShopContextProvider = (props) => {
 
     const getProductsData = async () => {
         try {
-            const response = await axios.get(backendUrl + '/api/product/list');
+            const response = await axios.get(backendUrl + "/api/product/list");
             if (response.data.success) {
                 setProducts(response.data.products.reverse());
             } else {
@@ -244,7 +251,7 @@ const ShopContextProvider = (props) => {
         if (!token) return;
         try {
             const response = await axios.get(`${backendUrl}/api/wishlist`, {
-                headers: { Authorization: `Bearer ${token}` }
+                headers: { Authorization: `Bearer ${token}` },
             });
             if (response.data.success) setWishlist(response.data.wishlist);
             else toast.error(response.data.message);
@@ -262,7 +269,7 @@ const ShopContextProvider = (props) => {
             const response = await axios.post(
                 `${backendUrl}/api/wishlist/add`,
                 { productId },
-                { headers: { Authorization: `Bearer ${token}` } }
+                { headers: { Authorization: `Bearer ${token}` } },
             );
             if (response.data.success) {
                 setWishlist(response.data.wishlist);
@@ -284,7 +291,7 @@ const ShopContextProvider = (props) => {
         try {
             const response = await axios.delete(
                 `${backendUrl}/api/wishlist/remove/${productId}`,
-                { headers: { Authorization: `Bearer ${token}` } }
+                { headers: { Authorization: `Bearer ${token}` } },
             );
             if (response.data.success) {
                 setWishlist(response.data.wishlist);
@@ -301,10 +308,9 @@ const ShopContextProvider = (props) => {
     // ⭐ Reviews
     const fetchReviews = async (productId) => {
         try {
-            const response = await axios.post(
-                `${backendUrl}/api/review/list`,
-                { productId }
-            );
+            const response = await axios.post(`${backendUrl}/api/review/list`, {
+                productId,
+            });
             if (response.data.success) {
                 setReviews(response.data.reviews);
             } else {
@@ -325,7 +331,7 @@ const ShopContextProvider = (props) => {
             const response = await axios.post(
                 `${backendUrl}/api/review/add`,
                 { productId, rating, comment }, // userId backend auth se set hoga
-                { headers: { Authorization: `Bearer ${token}` } }
+                { headers: { Authorization: `Bearer ${token}` } },
             );
             if (response.data.success) {
                 toast.success("Review added successfully");
@@ -348,7 +354,7 @@ const ShopContextProvider = (props) => {
             const response = await axios.post(
                 `${backendUrl}/api/review/update`,
                 { id: reviewId, rating, comment },
-                { headers: { Authorization: `Bearer ${token}` } }
+                { headers: { Authorization: `Bearer ${token}` } },
             );
             if (response.data.success) {
                 toast.success("Review updated");
@@ -371,7 +377,7 @@ const ShopContextProvider = (props) => {
             const response = await axios.post(
                 `${backendUrl}/api/review/remove`,
                 { id: reviewId },
-                { headers: { Authorization: `Bearer ${token}` } }
+                { headers: { Authorization: `Bearer ${token}` } },
             );
             if (response.data.success) {
                 toast.success("Review removed");
@@ -393,9 +399,15 @@ const ShopContextProvider = (props) => {
 
         try {
             setContactLoading(true);
-            const response = await axios.post(`${backendUrl}/api/contact/submit`, {
-                name, email, subject, message
-            });
+            const response = await axios.post(
+                `${backendUrl}/api/contact/submit`,
+                {
+                    name,
+                    email,
+                    subject,
+                    message,
+                },
+            );
 
             if (response.data.success) {
                 toast.success(response.data.message);
@@ -415,12 +427,14 @@ const ShopContextProvider = (props) => {
     }, []);
 
     useEffect(() => {
-        if (!token && localStorage.getItem('token')) {
-            setToken(localStorage.getItem('token'));
+        if (!token && localStorage.getItem("token")) {
+            setToken(localStorage.getItem("token"));
         }
     }, []);
 
-    useEffect(() => { if (token) fetchWishlist(); }, [token]);
+    useEffect(() => {
+        if (token) fetchWishlist();
+    }, [token]);
 
     useEffect(() => {
         localStorage.setItem("cartItems", JSON.stringify(cartItems));
@@ -485,3 +499,4 @@ const ShopContextProvider = (props) => {
 };
 
 export default ShopContextProvider;
+

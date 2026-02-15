@@ -1,13 +1,14 @@
-import React, { useContext, useEffect, useState } from 'react'
-import { ShopContext } from '../context/ShopContext'
-import Title from '../components/Title';
-import { assets } from '../assets/assets';
-import CartTotal from '../components/CartTotal';
-import { toast } from 'react-toastify';
-import RippleButton from '../components/RippleButton';
+import React, { useContext, useEffect, useState } from "react";
+import { ShopContext } from "../context/ShopContext";
+import Title from "../components/Title";
+import { assets } from "../assets/assets";
+import CartTotal from "../components/CartTotal";
+import { toast } from "react-toastify";
+import RippleButton from "../components/RippleButton";
 
 const Cart = () => {
-    const { products, currency, cartItems, updateQuantity, navigate, token } = useContext(ShopContext);
+    const { products, currency, cartItems, updateQuantity, navigate, token } =
+        useContext(ShopContext);
 
     const [cartData, setCartData] = useState([]);
 
@@ -22,7 +23,7 @@ const Cart = () => {
                             _id: itemId,
                             size,
                             color,
-                            quantity
+                            quantity,
                         });
                     }
                 }
@@ -32,100 +33,138 @@ const Cart = () => {
     }, [cartItems]);
 
     return (
-        <div className='border-t pt-14'>
-            <div className='text-2xl mb-3'>
-                <Title text1={"YOUR"} text2={'CART'} />
-            </div>
-
-            {/* ✅ Agar cart empty hai */}
-            {cartData.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-20 text-center">
-                    <p className="text-lg text-gray-600 mb-4">
-                        Your cart is empty. Add some products to continue shopping.
-                    </p>
-                    <RippleButton
-                        onClick={() => navigate("/collection")}
-                    >
-                        ADD PRODUCTS
-                    </RippleButton>
+        <div className="min-h-screen  pt-16 px-4">
+            <div className="max-w-7xl mx-auto">
+                <div className="text-3xl mb-10 text-center">
+                    <Title text1={"YOUR"} text2={"CART"} />
                 </div>
-            ) : (
-                <>
-                    {/* ✅ Cart items list */}
-                    <div>
-                        {cartData.map((item, index) => {
-                            const productData = products.find((product) => product._id === item._id);
 
-                            if (!productData) return null;
+                {/* EMPTY CART */}
+                {cartData.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center py-24 text-center bg-white rounded-3xl border border-emerald-100 shadow-lg">
+                        <p className="text-lg text-slate-600 mb-6">
+                            Your cart is empty. Add some products to continue
+                            shopping.
+                        </p>
+                        <RippleButton
+                            onClick={() => navigate("/collection")}
+                            className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-8 py-3 rounded-2xl font-semibold hover:scale-105 transition"
+                        >
+                            ADD PRODUCTS
+                        </RippleButton>
+                    </div>
+                ) : (
+                    <>
+                        {/* CART ITEMS */}
+                        <div className="space-y-6">
+                            {cartData.map((item, index) => {
+                                const productData = products.find(
+                                    (product) => product._id === item._id,
+                                );
+                                if (!productData) return null;
 
-                            return (
-                                <div
-                                    key={index}
-                                    className='py-4 border-t border-b text-gray-700 grid grid-cols-[4fr_0.5fr_0.5fr] sm:grid-cols-[4fr_2fr_0.5fr] items-center gap-4'
-                                >
-                                    <div className='flex items-start gap-6'>
-                                        <img className='w-16 sm:w-20' src={productData.image[0]} alt="product" />
-                                        <div>
-                                            <p className='text-xs sm:text-lg font-medium'>{productData.name}</p>
-                                            <div className='flex items-center gap-5 mt-2'>
-                                                <p>{currency}{productData.price}</p>
-                                                <p className='px-2 sm:px-3 sm:py-1 border bg-slate-50'>{item.size}</p>
-                                                <p className='px-2 sm:px-3 sm:py-1 border bg-slate-50'>{item.color}</p>
+                                return (
+                                    <div
+                                        key={index}
+                                        className="bg-white rounded-2xl border border-emerald-100 shadow-sm p-6 flex flex-col sm:flex-row items-center justify-between gap-6 hover:shadow-md transition"
+                                    >
+                                        {/* LEFT */}
+                                        <div className="flex items-center gap-6 w-full sm:w-auto">
+                                            <img
+                                                className="w-20 h-20 object-cover rounded-xl"
+                                                src={productData.image[0]}
+                                                alt="product"
+                                            />
+
+                                            <div>
+                                                <p className="text-lg font-semibold text-slate-900">
+                                                    {productData.name}
+                                                </p>
+
+                                                <div className="flex gap-4 mt-2 mb-2 text-slate-600 text-sm">
+                                                    <span>
+                                                        {currency}
+                                                        {productData.price}
+                                                    </span>
+                                                    <span className="px-3 py-1 bg-emerald-50 border border-emerald-200 rounded-lg">
+                                                        {item.size}
+                                                    </span>
+                                                    <span className="px-3 py-1 bg-emerald-50 border border-emerald-200 rounded-lg">
+                                                        {item.color}
+                                                    </span>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    {/* <input
-                                        onChange={(e) =>
-                                            e.target.value === "" || e.target.value === '0'
-                                                ? null
-                                                : updateQuantity(item._id, item.size, item.color, Number(e.target.value))
-                                        }
-                                        type="number"
-                                        className='border max-w-10 sm:max-w-20 px-1 sm:px-2 py-1'
-                                        min={1}
-                                        defaultValue={item.quantity}
-                                    /> */}
-                                    {/* 🔹 Quantity with + and - buttons */}
-                                    <div className="flex items-center gap-2">
-                                        <button
-                                            onClick={() =>
-                                                item.quantity > 1 &&
-                                                updateQuantity(item._id, item.size, item.color, item.quantity - 1)
-                                            }
-                                            className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
-                                        >
-                                            -
-                                        </button>
-                                        <span className="px-3">{item.quantity}</span>
-                                        <button
-                                            onClick={() =>
-                                                updateQuantity(item._id, item.size, item.color, item.quantity + 1)
-                                            }
-                                            className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
-                                        >
-                                            +
-                                        </button>
-                                    </div>
-                                    <img
-                                        onClick={() => updateQuantity(item._id, item.size, item.color, 0)}
-                                        src={assets.bin_icon}
-                                        className='w-4 mr-3 sm:w-5 cursor-pointer'
-                                        alt="bin"
-                                    />
-                                </div>
-                            );
-                        })}
-                    </div>
 
-                    {/* ✅ Cart total + checkout */}
-                    <div className='flex justify-end my-20'>
-                        <div className="w-full sm:w-[450px]">
-                            <CartTotal />
-                            <div className='w-full text-end mt-3'>
+                                        {/* RIGHT */}
+                                        <div className="flex items-center gap-6">
+                                            {/* Quantity */}
+                                            <div className="flex items-center bg-emerald-50 border border-emerald-200 rounded-xl overflow-hidden">
+                                                <button
+                                                    onClick={() =>
+                                                        item.quantity > 1 &&
+                                                        updateQuantity(
+                                                            item._id,
+                                                            item.size,
+                                                            item.color,
+                                                            item.quantity - 1,
+                                                        )
+                                                    }
+                                                    className="px-4 py-2 hover:bg-emerald-100 transition font-semibold"
+                                                >
+                                                    −
+                                                </button>
+
+                                                <span className="px-5 font-semibold">
+                                                    {item.quantity}
+                                                </span>
+
+                                                <button
+                                                    onClick={() =>
+                                                        updateQuantity(
+                                                            item._id,
+                                                            item.size,
+                                                            item.color,
+                                                            item.quantity + 1,
+                                                        )
+                                                    }
+                                                    className="px-4 py-2 hover:bg-emerald-100 transition font-semibold"
+                                                >
+                                                    +
+                                                </button>
+                                            </div>
+
+                                            {/* Remove */}
+                                            <button
+                                                onClick={() =>
+                                                    updateQuantity(
+                                                        item._id,
+                                                        item.size,
+                                                        item.color,
+                                                        0,
+                                                    )
+                                                }
+                                                className="text-red-500 hover:text-red-600 font-medium"
+                                            >
+                                                Remove
+                                            </button>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+
+                        {/* TOTAL + CHECKOUT */}
+                        <div className="flex justify-end mt-16">
+                            <div className="w-full sm:w-[450px] bg-white p-8 rounded-3xl border border-emerald-100 shadow-xl">
+                                <CartTotal />
+
                                 <RippleButton
                                     onClick={() => {
                                         if (cartData.length === 0) {
-                                            toast.error("Product is not available in cart");
+                                            toast.error(
+                                                "Product is not available in cart",
+                                            );
                                         } else if (!token) {
                                             toast.info("Please login first");
                                             navigate("/login");
@@ -133,16 +172,17 @@ const Cart = () => {
                                             navigate("/place-order");
                                         }
                                     }}
+                                    className="w-full mt-6 bg-gradient-to-r from-emerald-600 to-teal-600 text-white py-3 rounded-2xl font-semibold hover:scale-105 transition"
                                 >
                                     PROCEED TO CHECKOUT
                                 </RippleButton>
                             </div>
                         </div>
-                    </div>
-                </>
-            )}
+                    </>
+                )}
+            </div>
         </div>
-    )
-}
+    );
+};
 
-export default Cart
+export default Cart;

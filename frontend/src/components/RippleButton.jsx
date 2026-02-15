@@ -32,7 +32,8 @@ const RippleButton = ({ children, onClick }) => {
     return (
         <button
             onClick={handleClick}
-            className="flex justify-center relative overflow-hidden bg-black text-white px-8 py-3 text-sm rounded hover:bg-gray-800"
+            className="flex justify-center group px-8 py-4 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-full font-semibold hover:scale-105 transition"
+            // className="flex justify-center relative overflow-hidden bg-black text-white px-8 py-3 text-sm rounded hover:bg-gray-800"
         >
             {children}
         </button>

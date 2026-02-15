@@ -58,49 +58,50 @@ const App = () => {
             </marquee> */}
             <Navbar />
 
-      {/* APP WRAPPER */}
-      <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-stone-50 via-emerald-50 to-teal-50">
+            {/* APP WRAPPER */}
+            <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-stone-50 via-emerald-50 to-teal-50">
+                {/* BACKGROUND BLOBS (Brand aligned) */}
+                <div className="absolute inset-0 z-0 pointer-events-none">
+                    <div className="absolute -top-40 -right-40 w-80 h-80 bg-emerald-300 rounded-full mix-blend-multiply blur-xl opacity-40 animate-blob" />
+                    <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-teal-300 rounded-full mix-blend-multiply blur-xl opacity-40 animate-blob animation-delay-2000" />
+                </div>
 
-        {/* BACKGROUND BLOBS (Brand aligned) */}
-        <div className="absolute inset-0 z-0 pointer-events-none">
-          <div className="absolute -top-40 -right-40 w-80 h-80 bg-emerald-300 rounded-full mix-blend-multiply blur-xl opacity-40 animate-blob" />
-          <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-teal-300 rounded-full mix-blend-multiply blur-xl opacity-40 animate-blob animation-delay-2000" />
-        </div>
+                {/* MAIN CONTENT */}
+                <div className="relative z-99 px-4 sm:px-[5vw] md:px-[7vw] lg:px-[9vw]">
+                    <ToastContainer
+                        position="top-right"
+                        autoClose={2000}
+                        hideProgressBar={false}
+                        newestOnTop
+                        closeOnClick
+                        pauseOnHover
+                        theme="light"
+                    />
 
-        {/* MAIN CONTENT */}
-        <div className="relative z-10 px-4 sm:px-[5vw] md:px-[7vw] lg:px-[9vw]">
-          
-          <ToastContainer
-            position="top-right"
-            autoClose={2000}
-            hideProgressBar={false}
-            newestOnTop
-            closeOnClick
-            pauseOnHover
-            theme="light"
-          />
+                    <SearchBar />
 
-          <SearchBar />
+                    <Routes>
+                        <Route path="/" element={<Home />} />
+                        <Route path="/collection" element={<Collection />} />
+                        <Route path="/contact" element={<Contact />} />
+                        <Route path="/about" element={<About />} />
+                        <Route path="/login" element={<Login />} />
+                        <Route path="/cart" element={<Cart />} />
+                        <Route path="/wishlist" element={<Wishlist />} />
+                        <Route path="/orders" element={<Orders />} />
+                        <Route path="/verify" element={<Verify />} />
+                        <Route path="/profile" element={<Profile />} />
+                        <Route path="/place-order" element={<PlaceOrder />} />
+                        <Route
+                            path="/product/:productId"
+                            element={<Product />}
+                        />
+                    </Routes>
 
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/collection" element={<Collection />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/cart" element={<Cart />} />
-            <Route path="/wishlist" element={<Wishlist />} />
-            <Route path="/orders" element={<Orders />} />
-            <Route path="/verify" element={<Verify />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/place-order" element={<PlaceOrder />} />
-            <Route path="/product/:productId" element={<Product />} />
-          </Routes>
-
-          <ChatBot />
-          <Footer />
-        </div>
-      </div>
+                    <ChatBot />
+                    <Footer />
+                </div>
+            </div>
         </>
     );
 };
