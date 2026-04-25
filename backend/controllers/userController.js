@@ -173,6 +173,28 @@ const changePassword = async (req, res) => {
     }
 };
 
+const getUsers = async (req, res) => {
+    try {
+        const users = await userModel.find({}, "name email phone role");
+        res.json({ success: true, users });
+    } catch (error) {
+        res.json({ success: false, message: error.message });
+    }
+};
+
+// 🔥 UPDATE USER ROLE
+const updateUserRole = async (req, res) => {
+    try {
+        const { id, role } = req.body;
+
+        await userModel.findByIdAndUpdate(id, { role });
+
+        res.json({ success: true, message: "Role updated" });
+    } catch (error) {
+        res.json({ success: false, message: error.message });
+    }
+};
+
 export {
     loginUser,
     registerUser,
@@ -180,4 +202,6 @@ export {
     profileUser,
     updateProfile,
     changePassword,
+    getUsers,
+    updateUserRole
 };

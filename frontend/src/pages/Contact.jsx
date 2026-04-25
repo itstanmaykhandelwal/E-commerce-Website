@@ -70,7 +70,7 @@ const Contact = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-emerald-50 via-white to-white px-5 md:px-10">
+    <div className="min-h-screen bg-gradient-to-b from-emerald-50 via-white to-white px-5 pt-[100px] md:px-10">
 
       {/* Title */}
       <div className="text-center text-3xl pt-16 border-t border-emerald-100">

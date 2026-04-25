@@ -13,7 +13,7 @@ const Footer = () => {
                     <div>
                         <img
                             src={assets.logo}
-                            className="mb-6 w-24"
+                            className="mb-6 w-24 rounded-full"
                             alt="logo"
                         />
 

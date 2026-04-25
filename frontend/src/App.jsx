@@ -40,7 +40,7 @@ const App = () => {
                     <div className="absolute -bottom-40 -left-40 w-72 h-72 bg-teal-200 rounded-full blur-2xl opacity-30" />
                 </div>
 
-                <div className="relative z-10 px-4 sm:px-[5vw] md:px-[7vw] lg:px-[9vw]">
+                <div className="relative z-99 px-4 sm:px-[5vw] md:px-[7vw] lg:px-[9vw]">
                     <ToastContainer
                         position="top-right"
                         autoClose={2000}

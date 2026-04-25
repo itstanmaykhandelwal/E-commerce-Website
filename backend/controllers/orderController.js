@@ -64,7 +64,7 @@ const placeOrder = async (req, res) => {
             userId,
             items,
             address,
-            amount: finalAmount, // ✅ ab DB me sahi value save hogi
+            amount: finalAmount,
             paymentMethod: "COD",
             payment: false,
             date: Date.now(),
@@ -74,6 +74,14 @@ const placeOrder = async (req, res) => {
         await newOrder.save();
 
         await userModel.findByIdAndUpdate(userId, { cartData: {} });
+
+        if (global.io) {
+            global.io.emit("newOrder", {
+                message: "New Order Received 🚀",
+                orderId: newOrder._id,
+                amount: newOrder.amount,
+            });
+        }
 
         // ✅ Mail bhejna
         await sendOrderMail(user, newOrder);
@@ -225,9 +233,8 @@ const verifyRazorpay = async (req, res) => {
 
         if (generatedSignature === razorpay_signature) {
             // Razorpay order fetch karo
-            const orderInfo = await razorpayInstance.orders.fetch(
-                razorpay_order_id
-            );
+            const orderInfo =
+                await razorpayInstance.orders.fetch(razorpay_order_id);
 
             // MongoDB me order receipt ke basis par update karo
             await orderModel.findByIdAndUpdate(orderInfo.receipt, {
@@ -313,8 +320,8 @@ const sendOrderMail = async (user, order) => {
               .join("")}
         </ul>
         <p>Delivery Address: ${order.address.street}, ${order.address.city}, ${
-                order.address.state
-            }, ${order.address.zipcode}</p>
+            order.address.state
+        }, ${order.address.zipcode}</p>
       `,
         };
 

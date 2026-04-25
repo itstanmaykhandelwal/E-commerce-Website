@@ -111,7 +111,7 @@ const Product = () => {
             : 0;
 
     return (
-        <div className="min-h-screen ">
+        <div className="min-h-screen pt-[150px]">
             {/* Breadcrumb */}
             <div className="border-b">
                 <div className="max-w-7xl mx-auto px-4 py-4 flex items-center gap-2 text-sm text-slate-600">

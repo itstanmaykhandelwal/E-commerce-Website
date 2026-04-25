@@ -354,7 +354,7 @@ const Collection = () => {
     const totalPages = Math.ceil(filterProducts.length / productsPerPage);
 
     return (
-        <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen py-12 pt-[150px] px-4 sm:px-6 lg:px-8">
             <div className="max-w-7xl mx-auto">
                 <div className="flex flex-col lg:flex-row gap-8">
                     {/* FILTER SIDEBAR */}

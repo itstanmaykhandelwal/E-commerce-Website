@@ -117,7 +117,7 @@ const Orders = () => {
     const totalPages = Math.ceil(activeOrders.length / itemsPerPage);
 
     return (
-        <div className="border-t pt-16">
+        <div className="border-t pt-[150px]">
             <div className="text-2xl">
                 <Title text1={"MY"} text2={"ORDERS"} />
             </div>

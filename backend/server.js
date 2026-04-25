@@ -15,6 +15,7 @@ import faqRouter from "./routes/faqRoute.js";
 import faqs from "./data/faqData.js"; // faqData import kar lo
 import Product from "./models/productModel.js";
 import contactRouter from "./routes/contactRoute.js";
+import adminRoutes from './routes/adminRoute.js';
 
 // App Config
 const app = express();
@@ -23,6 +24,8 @@ if (process.env.NODE_ENV !== "test") {
   connectDB();
   connectCloudinary();
 }
+
+
 
 // Middlewares
 app.use(cors());
@@ -37,6 +40,7 @@ app.use("/api/wishlist", wishRouter);
 app.use("/api/review", reviewRouter);
 app.use("/api/faq", faqRouter);
 app.use("/api/contact", contactRouter);
+app.use('/api/admin', adminRoutes);
 
 // API test endpoint
 app.get("/", (req, res) => {
@@ -46,6 +50,7 @@ app.get("/", (req, res) => {
 // Socket.io Chat Setup
 const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: "*" } });
+global.io = io;
 
 // Helper functions
 // const getAnswerFromFAQ = (message) => {
