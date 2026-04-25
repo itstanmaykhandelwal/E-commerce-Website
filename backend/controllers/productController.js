@@ -59,8 +59,28 @@ const addProduct = async (req, res) => {
 // Func for list product
 const listProducts = async (req, res) => {
     try {
-        const products = await productModel.find({});
-        res.json({ success: true, products });
+
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 12;
+
+        const skip = (page - 1) * limit;
+
+        const products = await productModel
+            .find({})
+            .skip(skip)
+            .limit(limit)
+            .sort({ date: -1 });
+
+        const totalProducts = await productModel.countDocuments();
+
+        res.json({
+            success: true,
+            products,
+            currentPage: page,
+            totalPages: Math.ceil(totalProducts / limit),
+            totalProducts
+        });
+
     } catch (error) {
         console.log(error);
         res.json({ success: false, message: error.message });

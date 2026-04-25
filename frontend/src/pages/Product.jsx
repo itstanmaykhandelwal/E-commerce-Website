@@ -277,23 +277,31 @@ const Product = () => {
                     <div>
                         <p className="font-semibold mb-3">Quantity</p>
                         <div className="flex items-center gap-3">
-                            <button
-                                onClick={() =>
-                                    setQuantity(Math.max(1, quantity - 1))
-                                }
-                                className="w-12 h-12 rounded-xl border-2 border-emerald-200 hover:border-emerald-600 hover:bg-emerald-50 transition"
-                            >
-                                −
-                            </button>
-                            <span className="w-16 text-center text-xl font-bold">
-                                {quantity}
-                            </span>
-                            <button
-                                onClick={() => setQuantity(quantity + 1)}
-                                className="w-12 h-12 rounded-xl border-2 border-emerald-200 hover:border-emerald-600 hover:bg-emerald-50 transition"
-                            >
-                                +
-                            </button>
+                            <div className="flex items-center gap-3">
+                                <button
+                                    onClick={() =>
+                                        setQuantity((prev) =>
+                                            Math.max(1, prev - 1),
+                                        )
+                                    }
+                                    className="w-12 h-12 rounded-xl border-2 border-emerald-200 hover:border-emerald-600 hover:bg-emerald-50 transition"
+                                >
+                                    −
+                                </button>
+
+                                <span className="w-16 text-center text-xl font-bold">
+                                    {quantity}
+                                </span>
+
+                                <button
+                                    onClick={() =>
+                                        setQuantity((prev) => prev + 1)
+                                    }
+                                    className="w-12 h-12 rounded-xl border-2 border-emerald-200 hover:border-emerald-600 hover:bg-emerald-50 transition"
+                                >
+                                    +
+                                </button>
+                            </div>
                         </div>
                     </div>
 

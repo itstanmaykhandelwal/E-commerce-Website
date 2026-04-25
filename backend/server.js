@@ -19,8 +19,10 @@ import contactRouter from "./routes/contactRoute.js";
 // App Config
 const app = express();
 const port = process.env.PORT || 4000;
-connectDB();
-connectCloudinary();
+if (process.env.NODE_ENV !== "test") {
+  connectDB();
+  connectCloudinary();
+}
 
 // Middlewares
 app.use(cors());
@@ -132,4 +134,9 @@ io.on("connection", (socket) => {
 });
 
 // Start server
-server.listen(port, () => console.log(`Server is running on port ${port}`));
+// server.listen(port, () => console.log(`Server is running on port ${port}`));
+if (process.env.NODE_ENV !== "test") {
+  server.listen(port, () => console.log(`Server is running on port ${port}`));
+}
+
+export default app;

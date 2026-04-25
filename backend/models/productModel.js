@@ -9,10 +9,17 @@ const productSchema = new mongoose.Schema({
     subCategory: { type: String, required: true},
     sizes: { type: Array, required: true },
     color: { type: Array, required: true },
+    quantity: { type: Number, required: true, default: 0 },
     bestSeller:{type:Boolean},
     date:{type:Number,required:true},
-    // quantity: { type: Number, required: true },
 });
+
+// indexes for performance
+productSchema.index({ category: 1 });
+productSchema.index({ subCategory: 1 });
+productSchema.index({ date: -1 });
+productSchema.index({ name: "text", description: "text" });
+
 const productModel = mongoose.models.product || mongoose.model("product", productSchema);
 
-export default productModel
+export default productModel;
