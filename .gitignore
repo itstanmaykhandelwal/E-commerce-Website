@@ -1,3 +1,61 @@
+# Node modules
 node_modules/
 
-*.env
+# Environment variables (IMPORTANT - secrets)
+.env
+.env.*
+!.env.example
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Build / production
+dist/
+build/
+.next/
+out/
+
+# Cache
+.cache/
+.vite/
+
+# Dependency directories
+jspm_packages/
+
+# Optional npm cache
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# VS Code / IDE
+.vscode/
+.idea/
+
+# Mac system files
+.DS_Store
+
+# ZIP & archives (ye tu specifically bol raha tha)
+*.zip
+*.tar
+*.gz
+*.rar
+*.7z
+
+# Temporary files
+*.tmp
+*.temp
+
+# Coverage
+coverage/
+
+# Misc
+*.local
