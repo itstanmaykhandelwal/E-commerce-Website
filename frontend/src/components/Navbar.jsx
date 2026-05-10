@@ -1,7 +1,13 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
+
 import { assets } from "../assets/assets";
-import { Link, NavLink } from "react-router-dom";
-import { ShopContext } from "../context/ShopContext";
+
+import { Link, NavLink, useNavigate } from "react-router-dom";
+
+import useAuth from "../hooks/useAuth";
+import useCart from "../hooks/useCart";
+import useSearch from "../hooks/useSearch";
+
 import {
     FiSearch,
     FiUser,
@@ -14,54 +20,73 @@ import {
 } from "react-icons/fi";
 
 const Navbar = () => {
+    const navigate = useNavigate();
+
     const [visible, setVisible] = useState(false);
+
     const [showNavbar, setShowNavbar] = useState(true);
+
     const [lastScrollY, setLastScrollY] = useState(0);
-    const {
-        setShowSearch,
-        getCartCount,
-        navigate,
-        token,
-        setToken,
-        setCartItems,
-        setWishlist,
-    } = useContext(ShopContext);
 
-    const logout = () => {
-        navigate("/login");
-        localStorage.removeItem("token");
-        localStorage.removeItem("cartItems");
-        setToken("");
-        setCartItems({});
-        setWishlist([]);
-    };
+    // SEARCH CONTEXT
+    const { setShowSearch } = useSearch();
+
+    // AUTH CONTEXT
+    const { logout } = useAuth();
+
+    // CART CONTEXT
+    const { getCartCount } = useCart();
+
+    const cartCount = getCartCount();
+
+    // TOKEN
+    const token = localStorage.getItem("token");
+
+    // SCROLL HANDLER
+    const handleScroll = useCallback(() => {
+        if (window.scrollY > lastScrollY) {
+            setShowNavbar(false);
+        } else {
+            setShowNavbar(true);
+        }
+
+        setLastScrollY(window.scrollY);
+    }, [lastScrollY]);
+
+    // SCROLL EFFECT
     useEffect(() => {
-        const handleScroll = () => {
-            if (window.scrollY > lastScrollY) {
-                // scroll down
-                setShowNavbar(false);
-            } else {
-                // scroll up
-                setShowNavbar(true);
-            }
-
-            setLastScrollY(window.scrollY);
-        };
-
         window.addEventListener("scroll", handleScroll);
 
-        return () => window.removeEventListener("scroll", handleScroll);
-    }, [lastScrollY]);
+        return () => {
+            window.removeEventListener("scroll", handleScroll);
+        };
+    }, [handleScroll]);
+
+    // LOGOUT
+    const handleLogout = () => {
+        logout();
+
+        localStorage.removeItem("token");
+
+        localStorage.removeItem("cartItems");
+
+        navigate("/login");
+
+        setVisible(false);
+    };
+
     return (
         <>
             {/* MAIN NAVBAR */}
             <nav
-                className={`fixed top-0 w-full z-50 transition-transform duration-300 
-  ${showNavbar ? "translate-y-0" : "-translate-y-full"} 
-  bg-white/90 backdrop-blur-md border-b border-emerald-100 shadow-sm`}
+                className={`fixed left-0 top-0 w-full z-50 transition-transform duration-300
+                ${showNavbar ? "translate-y-0" : "-translate-y-full"}
+                bg-white border-b border-gray-200 shadow-sm`}
             >
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    
                     <div className="flex items-center justify-between h-20">
+                        
                         {/* LOGO */}
                         <Link
                             to="/"
@@ -69,7 +94,7 @@ const Navbar = () => {
                         >
                             <img
                                 src={assets.logo}
-                                className="w-16 h-16 sm:w-20 sm:h-20 rounded-full shadow-md"
+                                className="w-16 h-16 sm:w-20 sm:h-20 rounded-full shadow-sm"
                                 alt="logo"
                             />
                         </Link>
@@ -77,10 +102,22 @@ const Navbar = () => {
                         {/* DESKTOP LINKS */}
                         <ul className="hidden sm:flex items-center gap-8">
                             {[
-                                { path: "/", label: "Home" },
-                                { path: "/collection", label: "Collection" },
-                                { path: "/about", label: "About" },
-                                { path: "/contact", label: "Contact" },
+                                {
+                                    path: "/",
+                                    label: "Home",
+                                },
+                                {
+                                    path: "/collection",
+                                    label: "Collection",
+                                },
+                                {
+                                    path: "/about",
+                                    label: "About",
+                                },
+                                {
+                                    path: "/contact",
+                                    label: "Contact",
+                                },
                             ].map((item) => (
                                 <NavLink
                                     key={item.path}
@@ -88,16 +125,17 @@ const Navbar = () => {
                                     className={({ isActive }) =>
                                         `relative group text-sm font-semibold py-2 transition ${
                                             isActive
-                                                ? "text-emerald-700"
-                                                : "text-slate-700 hover:text-emerald-700"
+                                                ? "text-[#1E3A5F]"
+                                                : "text-slate-700 hover:text-black"
                                         }`
                                     }
                                 >
                                     {({ isActive }) => (
                                         <>
                                             <span>{item.label}</span>
+
                                             <span
-                                                className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-emerald-600 to-teal-600 transition-all ${
+                                                className={`absolute -bottom-1 left-0 h-0.5 bg-black transition-all duration-300 ${
                                                     isActive
                                                         ? "w-full"
                                                         : "w-0 group-hover:w-full"
@@ -111,71 +149,88 @@ const Navbar = () => {
 
                         {/* RIGHT ICONS */}
                         <div className="flex items-center gap-4 sm:gap-6">
+                            
                             {/* SEARCH */}
                             <button
                                 onClick={() => {
                                     navigate("/collection");
                                     setShowSearch(true);
                                 }}
-                                className="p-2 rounded-full hover:bg-emerald-50 hover:scale-110 transition"
+                                className="p-2 rounded-full hover:bg-gray-100 hover:scale-110 transition"
                             >
-                                <FiSearch className="w-5 h-5 text-slate-700 hover:text-emerald-700" />
+                                <FiSearch className="w-5 h-5 text-slate-700 hover:text-black" />
                             </button>
 
                             {/* PROFILE */}
                             <div className="relative group">
+                                
                                 <button
                                     onClick={() =>
                                         token ? null : navigate("/login")
                                     }
-                                    className="p-2 rounded-full hover:bg-emerald-50 hover:scale-110 transition"
+                                    className="p-2 rounded-full hover:bg-gray-100 hover:scale-110 transition"
                                 >
-                                    <FiUser className="w-5 h-5 text-slate-700 hover:text-emerald-700" />
+                                    <FiUser className="w-5 h-5 text-slate-700 hover:text-black" />
                                 </button>
 
                                 {token && (
-                                    <div className="absolute right-0 top-14 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition">
-                                        <div className="bg-white rounded-2xl shadow-xl border border-emerald-100 min-w-[200px] overflow-hidden">
-                                            <div className="bg-gradient-to-r from-emerald-600 to-teal-600 p-4 text-white">
+                                    <div className="absolute right-0 top-10 hidden group-hover:block z-50 pt-4">
+                                        
+                                        <div className="absolute top-[-10px] right-0 w-full h-8 bg-transparent"></div>
+
+                                        <div className="bg-white rounded-2xl shadow-xl border border-gray-200 min-w-[220px] overflow-hidden">
+                                            
+                                            <div className="bg-black p-4 text-white">
+                                                
                                                 <p className="text-sm font-semibold">
                                                     Welcome back
                                                 </p>
-                                                <p className="text-xs opacity-90">
+
+                                                <p className="text-xs opacity-80">
                                                     Manage your account
                                                 </p>
                                             </div>
 
-                                            <div className="flex flex-col gap-2 w-100 py-3 px-5">
+                                            <div className="flex flex-col gap-2 w-full py-3 px-5">
+                                                
                                                 <button
                                                     onClick={() =>
                                                         navigate("/profile")
                                                     }
-                                                    className="nav-dd-btn flex gap-2 items-center"
+                                                    className="nav-dd-btn flex gap-2 items-center hover:text-black"
                                                 >
-                                                    <FiUser /> My Profile
+                                                    <FiUser />
+                                                    My Profile
                                                 </button>
+
                                                 <button
                                                     onClick={() =>
                                                         navigate("/orders")
                                                     }
-                                                    className="nav-dd-btn flex gap-2 items-center"
+                                                    className="nav-dd-btn flex gap-2 items-center hover:text-black"
                                                 >
-                                                    <FiPackage /> Orders
+                                                    <FiPackage />
+                                                    Orders
                                                 </button>
+
                                                 <button
                                                     onClick={() =>
                                                         navigate("/wishlist")
                                                     }
-                                                    className="nav-dd-btn flex gap-2 items-center"
+                                                    className="nav-dd-btn flex gap-2 items-center hover:text-black"
                                                 >
-                                                    <FiHeart /> Wishlist
+                                                    <FiHeart />
+                                                    Wishlist
                                                 </button>
-                                                <div className="border-t my-1" />
+
+                                                <div className="border-t border-gray-200 my-1" />
+
                                                 <button
-                                                    onClick={logout}
-                                                    className="nav-dd-btn text-red-600 hover:bg-red-50 flex gap-2 items-center"
+                                                    onClick={handleLogout}
+                                                    className="nav-dd-btn text-red-600 hover:bg-red-50 flex gap-2 items-center rounded-lg px-2 py-2 transition"
                                                 >
-                                                    <FiLogOut /> Logout
+                                                    <FiLogOut />
+                                                    Logout
                                                 </button>
                                             </div>
                                         </div>
@@ -186,12 +241,13 @@ const Navbar = () => {
                             {/* CART */}
                             <Link
                                 to="/cart"
-                                className="relative p-2 rounded-full hover:bg-emerald-50 hover:scale-110 transition"
+                                className="relative p-2 rounded-full hover:bg-gray-100 hover:scale-110 transition"
                             >
-                                <FiShoppingCart className="w-5 h-5 text-slate-700 hover:text-emerald-700" />
-                                {getCartCount() > 0 && (
-                                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-gradient-to-r from-emerald-600 to-teal-600 text-white text-xs font-bold rounded-full flex items-center justify-center shadow">
-                                        {getCartCount()}
+                                <FiShoppingCart className="w-5 h-5 text-slate-700 hover:text-black" />
+
+                                {cartCount > 0 && (
+                                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-black text-white text-xs font-bold rounded-full flex items-center justify-center shadow">
+                                        {cartCount}
                                     </span>
                                 )}
                             </Link>
@@ -199,7 +255,7 @@ const Navbar = () => {
                             {/* MOBILE MENU */}
                             <button
                                 onClick={() => setVisible(true)}
-                                className="sm:hidden p-2 rounded-full hover:bg-emerald-50 transition"
+                                className="sm:hidden p-2 rounded-full hover:bg-gray-100 transition"
                             >
                                 <FiMenu className="w-6 h-6 text-slate-700" />
                             </button>
@@ -207,69 +263,6 @@ const Navbar = () => {
                     </div>
                 </div>
             </nav>
-
-            {/* MOBILE MENU */}
-            <div
-                className={`fixed inset-0 z-50 sm:hidden ${
-                    visible ? "visible opacity-100" : "invisible opacity-0"
-                } transition`}
-            >
-                <div
-                    onClick={() => setVisible(false)}
-                    className="absolute inset-0 bg-black/40 backdrop-blur-sm"
-                />
-
-                <div
-                    className={`absolute top-0 right-0 h-full w-full max-w-sm bg-white shadow-2xl transform transition ${
-                        visible ? "translate-x-0" : "translate-x-full"
-                    }`}
-                >
-                    <div className="bg-gradient-to-r from-emerald-600 to-teal-600 p-6 flex justify-between items-center text-white">
-                        <h2 className="text-xl font-bold">Menu</h2>
-                        <button onClick={() => setVisible(false)}>
-                            <FiX className="w-6 h-6" />
-                        </button>
-                    </div>
-
-                    <div className="py-4">
-                        {[
-                            { path: "/", label: "HOME" },
-                            { path: "/collection", label: "COLLECTION" },
-                            { path: "/about", label: "ABOUT" },
-                            { path: "/contact", label: "CONTACT" },
-                        ].map((item) => (
-                            <NavLink
-                                key={item.path}
-                                to={item.path}
-                                onClick={() => setVisible(false)}
-                                className={({ isActive }) =>
-                                    `block px-6 py-4 font-semibold transition ${
-                                        isActive
-                                            ? "bg-emerald-50 text-emerald-700 border-l-4 border-emerald-600"
-                                            : "text-slate-700 hover:bg-slate-50"
-                                    }`
-                                }
-                            >
-                                {item.label}
-                            </NavLink>
-                        ))}
-                    </div>
-
-                    {token && (
-                        <div className="absolute bottom-0 w-full p-6 border-t">
-                            <button
-                                onClick={() => {
-                                    logout();
-                                    setVisible(false);
-                                }}
-                                className="w-full py-3 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-full font-semibold"
-                            >
-                                Logout
-                            </button>
-                        </div>
-                    )}
-                </div>
-            </div>
         </>
     );
 };

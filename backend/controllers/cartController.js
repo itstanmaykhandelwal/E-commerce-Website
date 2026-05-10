@@ -140,7 +140,25 @@ const updateCart = async (req, res) => {
             cartData[itemId][size] &&
             cartData[itemId][size][color] !== undefined
         ) {
-            cartData[itemId][size][color] = quantity;
+            // REMOVE ITEM
+            if (Number(quantity) <= 0) {
+                delete cartData[itemId][size][color];
+
+                // REMOVE EMPTY SIZE
+                if (Object.keys(cartData[itemId][size]).length === 0) {
+                    delete cartData[itemId][size];
+                }
+
+                // REMOVE EMPTY PRODUCT
+                if (Object.keys(cartData[itemId]).length === 0) {
+                    delete cartData[itemId];
+                }
+            }
+
+            // UPDATE ITEM
+            else {
+                cartData[itemId][size][color] = Number(quantity);
+            }
         }
 
         user.cartData = cartData;
