@@ -5,7 +5,6 @@ import useCart from "../hooks/useCart";
 import { currency } from "../utils/constants";
 
 const CartTotal = ({ totalAmount }) => {
-
     const { getCartCount } = useCart();
 
     const shippingFee = totalAmount > 0 ? 40 : 0;
@@ -14,11 +13,12 @@ const CartTotal = ({ totalAmount }) => {
 
     return (
         <div>
+            {/* =========================
+                TITLE
+            ========================== */}
 
-            <div className="text-2xl">
-                
-                <div className="inline-flex gap-2 items-center mb-8">
-                    
+            <div className="text-xl sm:text-2xl">
+                <div className="inline-flex gap-2 items-center mb-5 sm:mb-8">
                     <p className="text-slate-700 font-semibold">
                         CART
                     </p>
@@ -27,15 +27,35 @@ const CartTotal = ({ totalAmount }) => {
                         TOTALS
                     </p>
 
-                    <span className="w-16 h-[2px] bg-black"></span>
+                    <span className="w-10 sm:w-16 h-[2px] bg-black"></span>
                 </div>
             </div>
 
-            <div className="flex flex-col gap-4 text-sm bg-white border border-gray-200 rounded-3xl p-10 shadow-sm">
-                
+            {/* =========================
+                TOTAL BOX
+            ========================== */}
+
+            <div
+                className="
+                    flex
+                    flex-col
+                    gap-3
+                    sm:gap-4
+                    text-sm
+                    bg-white
+                    border
+                    border-gray-200
+                    rounded-2xl
+                    sm:rounded-3xl
+                    p-5
+                    sm:p-7
+                    lg:p-10
+                    shadow-sm
+                "
+            >
                 {/* TOTAL ITEMS */}
-                <div className="flex justify-between items-center">
-                    
+
+                <div className="flex justify-between items-center gap-4">
                     <p className="text-slate-600">
                         Total Items
                     </p>
@@ -48,8 +68,8 @@ const CartTotal = ({ totalAmount }) => {
                 <hr className="border-gray-200" />
 
                 {/* SUBTOTAL */}
-                <div className="flex justify-between items-center">
-                    
+
+                <div className="flex justify-between items-center gap-4">
                     <p className="text-slate-600">
                         Subtotal
                     </p>
@@ -63,8 +83,8 @@ const CartTotal = ({ totalAmount }) => {
                 <hr className="border-gray-200" />
 
                 {/* SHIPPING */}
-                <div className="flex justify-between items-center">
-                    
+
+                <div className="flex justify-between items-center gap-4">
                     <p className="text-slate-600">
                         Shipping Fee
                     </p>
@@ -78,8 +98,20 @@ const CartTotal = ({ totalAmount }) => {
                 <hr className="border-gray-200" />
 
                 {/* FINAL TOTAL */}
-                <div className="flex justify-between items-center text-lg font-bold mt-2">
-                    
+
+                <div
+                    className="
+                        flex
+                        justify-between
+                        items-center
+                        gap-4
+                        text-base
+                        sm:text-lg
+                        font-bold
+                        mt-1
+                        sm:mt-2
+                    "
+                >
                     <p className="text-slate-900">
                         Total
                     </p>
@@ -89,7 +121,6 @@ const CartTotal = ({ totalAmount }) => {
                         {finalTotal.toFixed(2)}
                     </p>
                 </div>
-
             </div>
         </div>
     );
