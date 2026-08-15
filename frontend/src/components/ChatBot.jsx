@@ -1,58 +1,84 @@
-// components/ChatBot.jsx
 import { useState, useEffect, useRef } from "react";
-import { io } from "socket.io-client";
-import { useLocation } from "react-router-dom";  // 👈 add this
-import RippleButton from "./RippleButton";
+import { useLocation, useNavigate } from "react-router-dom";
 
-const socket = io(import.meta.env.VITE_BACKEND_URL);
+import RippleButton from "./RippleButton";
+import { searchProductsWithAI } from "../services/aiService";
 
 const ChatBot = () => {
     const [open, setOpen] = useState(false);
-    const [messages, setMessages] = useState([]);
-    const [input, setInput] = useState("Hii");
-    const [relatedCards, setRelatedCards] = useState([]);
-    const messagesEndRef = useRef(null);
-    const location = useLocation();  // 👈 track current route
 
-    // ✅ Close chatbot on route change
+    const [messages, setMessages] = useState([]);
+
+    const [input, setInput] = useState("");
+
+    const [loading, setLoading] = useState(false);
+
+    const messagesEndRef = useRef(null);
+
+    const location = useLocation();
+    const navigate = useNavigate();
+
+    // Close chatbot when route changes
     useEffect(() => {
         setOpen(false);
     }, [location]);
 
-    // Scroll to bottom on new message
+    // Scroll to latest message
     useEffect(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, [messages, relatedCards]);
-
-    // Listen to backend messages
-    useEffect(() => {
-        socket.on("bot message", (data) => {
-            setMessages((prev) => [...prev, { sender: "bot", text: data.answer }]);
-            const filteredCards = (data.relatedQuestions || []).filter(
-                q => !messages.some(msg => msg.sender === "user" && msg.text.toLowerCase() === q.toLowerCase())
-            );
-            setRelatedCards(filteredCards);
+        messagesEndRef.current?.scrollIntoView({
+            behavior: "smooth",
         });
+    }, [messages, loading]);
 
-        return () => socket.off("bot message");
-    }, [messages]);
+    const sendMessage = async () => {
+        const message = input.trim();
 
-    const sendMessage = () => {
-        if (!input.trim()) return;
+        if (!message || loading) return;
 
-        if (!messages.some(msg => msg.sender === "user" && msg.text.toLowerCase() === input.toLowerCase())) {
-            setMessages(prev => [...prev, { sender: "user", text: input }]);
-            socket.emit("user message", input);
-        }
+        // Add user message
+        setMessages((prev) => [
+            ...prev,
+            {
+                sender: "user",
+                text: message,
+            },
+        ]);
 
         setInput("");
+        setLoading(true);
+
+        try {
+            // Call backend AI
+            const data = await searchProductsWithAI(message);
+
+            // Add AI response
+            setMessages((prev) => [
+                ...prev,
+                {
+                    sender: "bot",
+                    text: data.response || "Sorry, I couldn't find anything.",
+                    products: data.products || [],
+                },
+            ]);
+        } catch (error) {
+            console.error("Chatbot error:", error);
+
+            setMessages((prev) => [
+                ...prev,
+                {
+                    sender: "bot",
+                    text: "Sorry, something went wrong. Please try again.",
+                    products: [],
+                },
+            ]);
+        } finally {
+            setLoading(false);
+        }
     };
 
-    const handleCardClick = (question) => {
-        const userMessages = messages.filter(m => m.sender === "user").map(m => m.text);
-        setMessages((prev) => [...prev, { sender: "user", text: question }]);
-        socket.emit("user message", question, userMessages);
-        setRelatedCards([]);
+    const handleProductClick = (productId) => {
+        setOpen(false);
+        navigate(`/product/${productId}`);
     };
 
     return (
@@ -60,56 +86,137 @@ const ChatBot = () => {
             {/* Toggle Button */}
             <button
                 onClick={() => setOpen(!open)}
-                className="bg-black text-white px-4 py-2 rounded-full shadow-lg hover:bg-black-700"
+                className="bg-black text-white px-4 py-2 rounded-full shadow-lg hover:bg-neutral-800"
             >
-                {open ? "Close Chat" : "Chat"}
+                {open ? "Close Chat" : "AI Shopping"}
             </button>
 
             {open && (
-                <div className="w-80 h-96 bg-white shadow-xl rounded-lg mt-2 flex flex-col overflow-hidden">
-                    <div className="bg-black text-white px-4 py-2 font-semibold">
-                        ChatBot
+                <div className="w-[360px] h-[520px] bg-white shadow-2xl rounded-2xl mt-2 flex flex-col overflow-hidden border border-gray-200">
+                    {/* HEADER */}
+                    <div className="bg-black text-white px-4 py-3">
+                        <p className="font-semibold">AI Shopping Assistant</p>
+
+                        <p className="text-xs text-gray-300">
+                            Find products using natural language
+                        </p>
                     </div>
 
-                    <div className="flex-1 p-3 overflow-y-auto space-y-2">
-                        {messages.map((msg, idx) => (
+                    {/* MESSAGES */}
+                    <div className="flex-1 p-3 overflow-y-auto space-y-3">
+                        {messages.length === 0 && (
+                            <div className="text-sm text-gray-500 text-center mt-10">
+                                <p className="font-medium text-gray-700">
+                                    Hi! 👋
+                                </p>
+
+                                <p className="mt-2">Try something like:</p>
+
+                                <p className="mt-1 text-gray-400">
+                                    "Mujhe white t-shirt 2000 ke andar chahiye"
+                                </p>
+                            </div>
+                        )}
+
+                        {messages.map((msg, index) => (
                             <div
-                                key={idx}
-                                className={`p-2 rounded ${msg.sender === "user" ? "bg-gray-200 self-end" : "bg-blue-100 self-start"}`}
+                                key={index}
+                                className={
+                                    msg.sender === "user"
+                                        ? "flex justify-end"
+                                        : "flex justify-start"
+                                }
                             >
-                                {msg.text}
+                                <div
+                                    className={
+                                        msg.sender === "user"
+                                            ? "max-w-[85%] bg-black text-white px-3 py-2 rounded-2xl rounded-br-sm text-sm"
+                                            : "max-w-[95%] bg-gray-100 text-gray-800 px-3 py-2 rounded-2xl rounded-bl-sm text-sm"
+                                    }
+                                >
+                                    {/* AI TEXT */}
+                                    <p className="whitespace-pre-line">
+                                        {msg.text}
+                                    </p>
+
+                                    {/* PRODUCTS */}
+                                    {msg.products?.length > 0 && (
+                                        <div className="mt-3 space-y-2">
+                                            {msg.products.map((product) => (
+                                                <div
+                                                    key={product._id}
+                                                    className="bg-white border border-gray-200 rounded-xl overflow-hidden cursor-pointer hover:shadow-md transition"
+                                                    onClick={() =>
+                                                        handleProductClick(
+                                                            product._id,
+                                                        )
+                                                    }
+                                                >
+                                                    {/* IMAGE */}
+                                                    <img
+                                                        src={product.image?.[0]}
+                                                        alt={product.name}
+                                                        className="w-full h-36 object-cover"
+                                                    />
+
+                                                    {/* PRODUCT INFO */}
+                                                    <div className="p-3">
+                                                        <p className="font-semibold text-gray-900">
+                                                            {product.name}
+                                                        </p>
+
+                                                        <p className="text-sm text-gray-500 mt-1">
+                                                            {
+                                                                product.description
+                                                            }
+                                                        </p>
+
+                                                        <div className="flex justify-between items-center mt-2">
+                                                            <span className="font-bold text-black">
+                                                                ₹{product.price}
+                                                            </span>
+
+                                                            <span className="text-xs text-gray-500">
+                                                                View Product →
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         ))}
 
-                        {relatedCards.length > 0 && (
-                            <div className="mt-2 flex flex-wrap gap-2">
-                                {relatedCards.map((q, idx) => (
-                                    <button
-                                        key={idx}
-                                        onClick={() => handleCardClick(q)}
-                                        className="bg-gray-100 text-sm px-2 py-1 rounded hover:bg-gray-200"
-                                    >
-                                        {q}
-                                    </button>
-                                ))}
+                        {/* LOADING */}
+                        {loading && (
+                            <div className="flex justify-start">
+                                <div className="bg-gray-100 px-4 py-3 rounded-2xl text-sm text-gray-500">
+                                    Searching products...
+                                </div>
                             </div>
                         )}
+
                         <div ref={messagesEndRef} />
                     </div>
 
-                    <div className="p-2 border-t flex gap-2">
+                    {/* INPUT */}
+                    <div className="p-3 border-t flex gap-2">
                         <input
                             type="text"
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
-                            className="flex-1 border rounded px-2 py-1 focus:outline-none"
-                            placeholder="Type a message..."
-                            onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+                            className="flex-1 border border-gray-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-black"
+                            placeholder="Ask for a product..."
+                            onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                    sendMessage();
+                                }
+                            }}
                         />
-                        <RippleButton
-                            onClick={sendMessage}
-                            // className="bg-black text-white px-3 py-1 rounded hover:bg-black-700"
-                        >
+
+                        <RippleButton onClick={sendMessage} disabled={loading}>
                             Send
                         </RippleButton>
                     </div>

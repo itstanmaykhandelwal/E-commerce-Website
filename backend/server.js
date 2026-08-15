@@ -16,6 +16,7 @@ import faqs from "./data/faqData.js"; // faqData import kar lo
 import Product from "./models/productModel.js";
 import contactRouter from "./routes/contactRoute.js";
 import adminRoutes from './routes/adminRoute.js';
+import aiRouter from "./routes/aiRoute.js";
 
 // App Config
 const app = express();
@@ -41,6 +42,7 @@ app.use("/api/review", reviewRouter);
 app.use("/api/faq", faqRouter);
 app.use("/api/contact", contactRouter);
 app.use('/api/admin', adminRoutes);
+app.use("/api/ai", aiRouter);
 
 // API test endpoint
 app.get("/", (req, res) => {

@@ -4,25 +4,35 @@ import {
     addItemToCart,
     getCartData,
     updateCartItem,
+    removeCartItem,
 } from "../services/cartService";
+
+import { toast } from "react-toastify";
 
 // HOOKS
 import useProducts from "../hooks/useProducts";
 import useAuth from "../hooks/useAuth";
-import axios from "axios";
 
 export const CartContext = createContext();
 
 const CartProvider = ({ children }) => {
+    // =========================
     // PRODUCTS
+    // =========================
+
     const { products } = useProducts();
 
+    // =========================
     // AUTH
+    // =========================
+
     const { token } = useAuth();
 
+    // =========================
     // STATES
-    const [cartItems, setCartItems] = useState({});
+    // =========================
 
+    const [cartItems, setCartItems] = useState({});
     const [loading, setLoading] = useState(false);
 
     // =========================
@@ -41,10 +51,47 @@ const CartProvider = ({ children }) => {
                 setCartItems(data.cartData || {});
             }
         } catch (error) {
-            console.log(error);
+            console.log("Fetch Cart Error:", error);
         } finally {
             setLoading(false);
         }
+    };
+
+    // =========================
+    // GET CURRENT PRODUCT
+    // =========================
+
+    const getProduct = (itemId) => {
+        return products.find((product) => product._id === itemId);
+    };
+
+    // =========================
+    // GET TOTAL QUANTITY
+    // OF A PRODUCT IN CART
+    // =========================
+
+    const getProductCartQuantity = (itemId) => {
+        let total = 0;
+
+        const productCart = cartItems[itemId];
+
+        if (!productCart) {
+            return 0;
+        }
+
+        for (const size in productCart) {
+            const sizeData = productCart[size];
+
+            if (typeof sizeData === "object" && sizeData !== null) {
+                for (const color in sizeData) {
+                    total += Number(sizeData[color]) || 0;
+                }
+            } else {
+                total += Number(sizeData) || 0;
+            }
+        }
+
+        return total;
     };
 
     // =========================
@@ -57,45 +104,92 @@ const CartProvider = ({ children }) => {
         color = "default",
         quantity = 1,
     ) => {
-        let cartData = structuredClone(cartItems);
+        const product = getProduct(itemId);
 
-        // PRODUCT
-        if (!cartData[itemId]) {
-            cartData[itemId] = {};
+        if (!product) {
+            toast.error("Product not found");
+            return;
         }
 
-        // SIZE
-        if (!cartData[itemId][size]) {
-            cartData[itemId][size] = {};
+        const stock = Number(product.quantity) || 0;
+        const requestedQuantity = Number(quantity) || 1;
+
+        if (stock <= 0) {
+            toast.error("Out of stock");
+            return;
         }
 
-        // COLOR
-        if (!cartData[itemId][size][color]) {
-            cartData[itemId][size][color] = 0;
+        // Current total quantity of this product
+        const currentTotal = getProductCartQuantity(itemId);
+
+        // Stock validation
+        if (currentTotal + requestedQuantity > stock) {
+            const remaining = stock - currentTotal;
+
+            toast.error(
+                remaining > 0
+                    ? `Only ${remaining} item(s) available`
+                    : "No more stock available",
+            );
+
+            return;
         }
 
-        // QUANTITY
-        cartData[itemId][size][color] += quantity;
+        // =========================
+        // OPTIMISTIC UPDATE
+        // =========================
 
-        setCartItems(cartData);
+        const previousCart = structuredClone(cartItems);
+
+        const newCart = structuredClone(cartItems);
+
+        if (!newCart[itemId]) {
+            newCart[itemId] = {};
+        }
+
+        if (!newCart[itemId][size]) {
+            newCart[itemId][size] = {};
+        }
+
+        if (!newCart[itemId][size][color]) {
+            newCart[itemId][size][color] = 0;
+        }
+
+        newCart[itemId][size][color] += requestedQuantity;
+
+        setCartItems(newCart);
+
+        // =========================
+        // API
+        // =========================
 
         try {
-            await axios.post(
-                backendUrl + "/api/cart/add",
-                {
-                    itemId,
-                    size,
-                    color,
-                    quantity,
-                },
-                {
-                    headers: {
-                        token,
-                    },
-                },
-            );
+            const response = await addItemToCart({
+                itemId,
+                size,
+                color,
+                quantity: requestedQuantity,
+            });
+
+            if (!response.success) {
+                setCartItems(previousCart);
+
+                toast.error(response.message || "Unable to add product");
+
+                return;
+            }
+
+            // Sync with backend
+            await fetchCart();
         } catch (error) {
-            console.log(error);
+            console.log("Add To Cart Error:", error);
+
+            // Rollback
+            setCartItems(previousCart);
+
+            toast.error(
+                error.response?.data?.message || "Unable to add product",
+            );
         }
     };
 
@@ -104,44 +198,139 @@ const CartProvider = ({ children }) => {
     // =========================
 
     const updateCart = async (itemId, size, color, quantity) => {
-        let cartData = structuredClone(cartItems);
+        const product = getProduct(itemId);
 
-        // REMOVE
-        if (quantity <= 0) {
-            delete cartData[itemId][size][color];
-
-            // CLEAN EMPTY SIZE
-            if (Object.keys(cartData[itemId][size]).length === 0) {
-                delete cartData[itemId][size];
-            }
-
-            // CLEAN EMPTY PRODUCT
-            if (Object.keys(cartData[itemId]).length === 0) {
-                delete cartData[itemId];
-            }
-        } else {
-            cartData[itemId][size][color] = quantity;
+        if (!product) {
+            toast.error("Product not found");
+            return;
         }
 
-        setCartItems(cartData);
+        const stock = Number(product.quantity) || 0;
 
-        try {
-            await axios.post(
-                backendUrl + "/api/cart/update",
-                {
+        const requestedQuantity = Number(quantity) || 0;
+
+        const previousCart = structuredClone(cartItems);
+
+        const newCart = structuredClone(cartItems);
+
+        // =========================
+        // REMOVE
+        // =========================
+
+        if (requestedQuantity <= 0) {
+            if (
+                newCart[itemId] &&
+                newCart[itemId][size] &&
+                newCart[itemId][size][color]
+            ) {
+                delete newCart[itemId][size][color];
+
+                if (Object.keys(newCart[itemId][size]).length === 0) {
+                    delete newCart[itemId][size];
+                }
+
+                if (Object.keys(newCart[itemId]).length === 0) {
+                    delete newCart[itemId];
+                }
+            }
+
+            setCartItems(newCart);
+
+            try {
+                const response = await removeCartItem({
                     itemId,
                     size,
                     color,
-                    quantity,
-                },
-                {
-                    headers: {
-                        token,
-                    },
-                },
+                });
+
+                if (!response.success) {
+                    setCartItems(previousCart);
+
+                    toast.error(response.message || "Unable to remove product");
+                }
+            } catch (error) {
+                console.log("Remove Cart Error:", error);
+
+                setCartItems(previousCart);
+
+                toast.error(
+                    error.response?.data?.message || "Unable to remove product",
+                );
+            }
+
+            return;
+        }
+
+        // =========================
+        // STOCK VALIDATION
+        // =========================
+
+        // Current total includes the old
+        // quantity of this particular variant.
+        const currentTotal = getProductCartQuantity(itemId);
+
+        const currentVariantQuantity =
+            Number(cartItems?.[itemId]?.[size]?.[color]) || 0;
+
+        const otherQuantity = currentTotal - currentVariantQuantity;
+
+        if (otherQuantity + requestedQuantity > stock) {
+            const remaining = stock - otherQuantity;
+
+            toast.error(
+                remaining > 0
+                    ? `Only ${remaining} item(s) available`
+                    : "No more stock available",
             );
+
+            return;
+        }
+
+        // =========================
+        // UPDATE LOCAL CART
+        // =========================
+
+        if (!newCart[itemId]) {
+            newCart[itemId] = {};
+        }
+
+        if (!newCart[itemId][size]) {
+            newCart[itemId][size] = {};
+        }
+
+        newCart[itemId][size][color] = requestedQuantity;
+
+        setCartItems(newCart);
+
+        // =========================
+        // API
+        // =========================
+
+        try {
+            const response = await updateCartItem({
+                itemId,
+                size,
+                color,
+                quantity: requestedQuantity,
+            });
+
+            if (!response.success) {
+                setCartItems(previousCart);
+
+                toast.error(response.message || "Unable to update cart");
+
+                return;
+            }
+
+            await fetchCart();
         } catch (error) {
-            console.log(error);
+            console.log("Update Cart Error:", error);
+
+            setCartItems(previousCart);
+
+            toast.error(
+                error.response?.data?.message || "Unable to update cart",
+            );
         }
     };
 
@@ -150,44 +339,48 @@ const CartProvider = ({ children }) => {
     // =========================
 
     const removeFromCart = async (itemId, size, color) => {
-        let cartData = structuredClone(cartItems);
+        const previousCart = structuredClone(cartItems);
+
+        const newCart = structuredClone(cartItems);
 
         if (
-            cartData[itemId] &&
-            cartData[itemId][size] &&
-            cartData[itemId][size][color]
+            newCart[itemId] &&
+            newCart[itemId][size] &&
+            newCart[itemId][size][color]
         ) {
-            delete cartData[itemId][size][color];
+            delete newCart[itemId][size][color];
 
-            // CLEAN EMPTY SIZE
-            if (Object.keys(cartData[itemId][size]).length === 0) {
-                delete cartData[itemId][size];
+            if (Object.keys(newCart[itemId][size]).length === 0) {
+                delete newCart[itemId][size];
             }
 
-            // CLEAN EMPTY PRODUCT
-            if (Object.keys(cartData[itemId]).length === 0) {
-                delete cartData[itemId];
+            if (Object.keys(newCart[itemId]).length === 0) {
+                delete newCart[itemId];
             }
         }
 
-        setCartItems(cartData);
+        setCartItems(newCart);
 
         try {
-            await axios.post(
-                backendUrl + "/api/cart/remove",
-                {
-                    itemId,
-                    size,
-                    color,
-                },
-                {
-                    headers: {
-                        token,
-                    },
-                },
-            );
+            const response = await removeCartItem({
+                itemId,
+                size,
+                color,
+            });
+
+            if (!response.success) {
+                setCartItems(previousCart);
+
+                toast.error(response.message || "Unable to remove product");
+            }
         } catch (error) {
-            console.log(error);
+            console.log("Remove Cart Error:", error);
+
+            setCartItems(previousCart);
+
+            toast.error(
+                error.response?.data?.message || "Unable to remove product",
+            );
         }
     };
 
@@ -195,15 +388,12 @@ const CartProvider = ({ children }) => {
     // CLEAR CART
     // =========================
 
-    // const clearCart = () => {
-    //     setCartItems({});
-    // };
     const clearCart = () => {
+        setCartItems({});
 
-    setCartItems({});
+        localStorage.removeItem("cart");
+    };
 
-    localStorage.removeItem("cart");
-};
     // =========================
     // TOTAL CART COUNT
     // =========================
@@ -217,15 +407,11 @@ const CartProvider = ({ children }) => {
             for (const size in item) {
                 const sizeData = item[size];
 
-                // COLOR OBJECT
                 if (typeof sizeData === "object" && sizeData !== null) {
                     for (const color in sizeData) {
                         totalCount += Number(sizeData[color]) || 0;
                     }
-                }
-
-                // DIRECT NUMBER
-                else {
+                } else {
                     totalCount += Number(sizeData) || 0;
                 }
             }
@@ -242,28 +428,26 @@ const CartProvider = ({ children }) => {
         let totalAmount = 0;
 
         for (const itemId in cartItems) {
-            const itemInfo = products.find((product) => product._id === itemId);
+            const itemInfo = getProduct(itemId);
 
             if (!itemInfo) continue;
 
             for (const size in cartItems[itemId]) {
                 const sizeData = cartItems[itemId][size];
 
-                // COLOR OBJECT
                 if (typeof sizeData === "object" && sizeData !== null) {
                     for (const color in sizeData) {
-                        const quantity = sizeData[color];
+                        const quantity = Number(sizeData[color]) || 0;
 
                         if (quantity > 0) {
                             totalAmount += itemInfo.price * quantity;
                         }
                     }
-                }
+                } else {
+                    const quantity = Number(sizeData) || 0;
 
-                // OLD STRUCTURE SUPPORT
-                else {
-                    if (sizeData > 0) {
-                        totalAmount += itemInfo.price * sizeData;
+                    if (quantity > 0) {
+                        totalAmount += itemInfo.price * quantity;
                     }
                 }
             }
@@ -284,16 +468,24 @@ const CartProvider = ({ children }) => {
         }
     }, [token]);
 
+    // =========================
+    // CONTEXT
+    // =========================
+
     return (
         <CartContext.Provider
             value={{
                 products,
                 cartItems,
+                loading,
+
                 addToCart,
                 updateCart,
                 removeFromCart,
+
                 getCartCount,
                 getCartAmount,
+
                 setCartItems,
                 clearCart,
             }}

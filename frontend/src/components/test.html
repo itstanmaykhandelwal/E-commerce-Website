@@ -1,0 +1,353 @@
+<!-- <div style="width: 1440px; height: 900px" data-us-project="v6DG1HSblKQIQ5VvuW82"></div>
+<script type="text/javascript">!function(){var u=window.UnicornStudio;if(u&&u.init){if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",function(){u.init()})}else{u.init()}}else{window.UnicornStudio={isInitialized:!1};var i=document.createElement("script");i.src="https://cdn.jsdelivr.net/gh/hiunicornstudio/unicornstudio.js@v2.1.12/dist/unicornStudio.umd.js",i.onload=function(){if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",function(){UnicornStudio.init()})}else{UnicornStudio.init()}},(document.head||document.body).appendChild(i)}}();</script>
+
+
+box-shadow: 0px 0px 53.35px 43.75px #1C273114;
+
+background: linear-gradient(0deg, #4A068E 7.56%, #4A068E 17.04%, rgba(254, 163, 233, 0.8) 28.37%, #FFFDF5 44.23%, #FFFDF5 83.87%);
+
+background: linear-gradient(180deg, #1952AC 0%, #8ABAFA 45%);
+
+background: linear-gradient(180deg, #00B0D9 0%, #57C8E2 100%); -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tabs Hover Effect</title>
+
+    <style>
+        .bs-tabs .typ-tab-box {
+            position: relative;
+        }
+
+        /* TAB SPACING */
+        .bs-tabs .typ-tab-box.orange-tab {
+            margin-top: -255px;
+            position: relative;
+        }
+
+        .bs-tabs .typ-tab-box.green-tab {
+            margin-top: -235px;
+            position: relative;
+        }
+
+        .bs-tabs .typ-tab-box.blue-tab {
+            margin-top: -235px;
+            position: relative;
+        }
+
+        .bs-tabs .typ-tab-box.purple-tab {
+            margin-top: 0px;
+            position: relative;
+        }
+
+        /* IMAGE WRAPPER */
+        .bs-tabs .typ-tab-box .img-wrapper {
+            position: relative;
+            overflow: hidden;
+            border-radius: 24px;
+            z-index: 5;
+        }
+
+        /* =========================
+   DASHBOARD WRAPPERS
+========================= */
+
+        .bs-tabs .typ-tab-box .dashboard-wrapper {
+            position: absolute;
+            bottom: -40px;
+
+            opacity: 0;
+            visibility: hidden;
+
+            transition: all 0.7s ease;
+
+            transform-origin: bottom center;
+        }
+
+        /* CARD 1 */
+        .bs-tabs .typ-tab-box .dashboard-wrapper:nth-child(2) {
+            right: 80px;
+            z-index: 1;
+            transform: translateY(260px);
+        }
+
+        /* CARD 2 */
+        .bs-tabs .typ-tab-box .dashboard-wrapper:nth-child(3) {
+            right: 60px;
+            z-index: 2;
+            transform: translateY(220px);
+        }
+
+        /* CARD 3 */
+        .bs-tabs .typ-tab-box .dashboard-wrapper:nth-child(4) {
+            right: 40px;
+            z-index: 3;
+            transform: translateY(180px);
+        }
+
+        /* CARD 4 */
+        .bs-tabs .typ-tab-box .dashboard-wrapper:nth-child(5) {
+            right: 20px;
+            z-index: 4;
+            transform: translateY(140px);
+        }
+
+        /* DASHBOARD IMAGE */
+        .bs-tabs .typ-tab-box .dashboard-wrapper .dashboard-img {
+            width: 430px;
+            display: block;
+            border-radius: 22px;
+        }
+
+        /* =========================
+   SHOW EFFECT
+========================= */
+
+        .bs-tabs .typ-tab-box:has(.flx-items p:hover) .dashboard-wrapper {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* CARD 1 */
+        .bs-tabs .typ-tab-box:has(.flx-items p:hover) .dashboard-wrapper:nth-child(2) {
+            transform: translateY(-40px);
+        }
+
+        /* CARD 2 */
+        .bs-tabs .typ-tab-box:has(.flx-items p:hover) .dashboard-wrapper:nth-child(3) {
+            transform: translateY(-60px);
+        }
+
+        /* CARD 3 */
+        .bs-tabs .typ-tab-box:has(.flx-items p:hover) .dashboard-wrapper:nth-child(4) {
+            transform: translateY(-80px);
+        }
+
+        /* CARD 4 */
+        .bs-tabs .typ-tab-box:has(.flx-items p:hover) .dashboard-wrapper:nth-child(5) {
+            transform: translateY(-100px);
+        }
+
+        /* DEFAULT HEADING COLORS */
+        .typ-purple {
+            color: #6357ab;
+        }
+
+        .typ-orange {
+            color: #cb491c;
+        }
+
+        .typ-green {
+            color: #007276;
+        }
+
+        .typ-blue {
+            color: #3f4afe;
+        }
+
+        /* TAGS */
+        .bs-tabs .typ-tab-box .flx-items p {
+            padding: 10px 18px;
+            border-radius: 100px;
+            cursor: pointer;
+            transition: all 0.35s ease;
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        /* PURPLE TAG */
+        .purple-name {
+            background: #d3e4ff;
+            color: #3f4afe;
+        }
+
+        .purple-name:hover {
+            background: #2c08b5;
+            color: #fff;
+            transform: translateY(-2px);
+        }
+
+        /* ORANGE TAG */
+        .orange-name {
+            background: #ffe7df;
+            color: #cb491c;
+        }
+
+        .orange-name:hover {
+            background: #cb491c;
+            color: #fff;
+            transform: translateY(-2px);
+        }
+
+        /* GREEN TAG */
+        .green-name {
+            background: #e3fdff;
+            color: #007276;
+        }
+
+        .green-name:hover {
+            background: #007276;
+            color: #fff;
+            transform: translateY(-2px);
+        }
+
+        /* BLUE TAG */
+        .blue-name {
+            background: #f8efff;
+            color: #3f4afe;
+        }
+
+        .blue-name:hover {
+            background: #3f4afe;
+            color: #fff;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="bs-tabs">
+
+        <div class="typ-tab-box purple-tab">
+            <div class="img-wrapper">
+                <img src="https://cdn.prod.website-files.com/63e7894221f7cc20e07be64b/6a02dba0ab8779bbda143bb4_new-inactive.svg"
+                    class="img-inactive" alt="inactive">
+                <img src="https://cdn.prod.website-files.com/63e7894221f7cc20e07be64b/6a02eab01206d23665700978_purple-active.svg"
+                    class="img-active" alt="active-img">
+            </div>
+            <div class="dashboard-wrapper">
+                <img src="https://cdn.prod.website-files.com/63e7894221f7cc20e07be64b/6a02f52b9c6d89d32b1e6f55_dashboards.webp"
+                    class="dashboard-img" alt="dashboard">
+            </div>
+            <div class="dashboard-wrapper">
+                <img src="https://cdn.prod.website-files.com/63e7894221f7cc20e07be64b/6a02f52b9c6d89d32b1e6f55_dashboards.webp"
+                    class="dashboard-img" alt="dashboard">
+            </div>
+            <div class="dashboard-wrapper">
+                <img src="https://cdn.prod.website-files.com/63e7894221f7cc20e07be64b/6a02f52b9c6d89d32b1e6f55_dashboards.webp"
+                    class="dashboard-img" alt="dashboard">
+            </div>
+            <div class="dashboard-wrapper">
+                <img src="https://cdn.prod.website-files.com/63e7894221f7cc20e07be64b/6a02f52b9c6d89d32b1e6f55_dashboards.webp"
+                    class="dashboard-img" alt="dashboard">
+            </div>
+            <div class="heading-lyt">
+                <h2 class="name typ-purple">SaaS Products</h2>
+            </div>
+            <div class="flx-items">
+                <p class="purple-name">CRM</p>
+                <p class="purple-name">HR Tools</p>
+                <p class="purple-name">ERP</p>
+                <p class="purple-name">Automation</p>
+            </div>
+        </div>
+        <div class="typ-tab-box orange-tab">
+            <div class="img-wrapper">
+                <img src="https://cdn.prod.website-files.com/63e7894221f7cc20e07be64b/6a02c2d039297c7e0c0d3a81_orange-inactive.svg"
+                    class="img-inactive" alt="inactive">
+                <img src="https://cdn.prod.website-files.com/63e7894221f7cc20e07be64b/6a02eab1346f563265fcc678_orange-active.svg"
+                    class="img-active" alt="active-img">
+            </div>
+            <div class="dashboard-wrapper">
+                <img src="https://cdn.prod.website-files.com/63e7894221f7cc20e07be64b/6a02f52b9c6d89d32b1e6f55_dashboards.webp"
+                    class="dashboard-img" alt="dashboard">
+            </div>
+            <div class="dashboard-wrapper">
+                <img src="https://cdn.prod.website-files.com/63e7894221f7cc20e07be64b/6a02f52b9c6d89d32b1e6f55_dashboards.webp"
+                    class="dashboard-img" alt="dashboard">
+            </div>
+            <div class="dashboard-wrapper">
+                <img src="https://cdn.prod.website-files.com/63e7894221f7cc20e07be64b/6a02f52b9c6d89d32b1e6f55_dashboards.webp"
+                    class="dashboard-img" alt="dashboard">
+            </div>
+            <div class="dashboard-wrapper">
+                <img src="https://cdn.prod.website-files.com/63e7894221f7cc20e07be64b/6a02f52b9c6d89d32b1e6f55_dashboards.webp"
+                    class="dashboard-img" alt="dashboard">
+            </div>
+            <div class="heading-lyt">
+                <h2 class="name typ-orange">AI & ML Products</h2>
+            </div>
+            <div class="flx-items typ-orangetab-items">
+                <p class="orange-name">Automation</p>
+                <p class="orange-name">CRM</p>
+                <p class="orange-name">HR Tools</p>
+                <p class="orange-name">ERP</p>
+            </div>
+        </div>
+        <div class="typ-tab-box green-tab">
+            <div class="img-wrapper">
+                <img src="https://cdn.prod.website-files.com/63e7894221f7cc20e07be64b/6a02c2d079dafa64e1b94405_green-inactive.svg"
+                    class="img-inactive" alt="inactive">
+                <img src="https://cdn.prod.website-files.com/63e7894221f7cc20e07be64b/6a02eab0537cd61f45df90a5_green-active.svg"
+                    class="img-active" alt="img-active">
+            </div>
+            <div class="dashboard-wrapper">
+                <img src="https://cdn.prod.website-files.com/63e7894221f7cc20e07be64b/6a02f52b9c6d89d32b1e6f55_dashboards.webp"
+                    class="dashboard-img" alt="dashboard">
+            </div>
+            <div class="dashboard-wrapper">
+                <img src="https://cdn.prod.website-files.com/63e7894221f7cc20e07be64b/6a02f52b9c6d89d32b1e6f55_dashboards.webp"
+                    class="dashboard-img" alt="dashboard">
+            </div>
+            <div class="dashboard-wrapper">
+                <img src="https://cdn.prod.website-files.com/63e7894221f7cc20e07be64b/6a02f52b9c6d89d32b1e6f55_dashboards.webp"
+                    class="dashboard-img" alt="dashboard">
+            </div>
+            <div class="dashboard-wrapper">
+                <img src="https://cdn.prod.website-files.com/63e7894221f7cc20e07be64b/6a02f52b9c6d89d32b1e6f55_dashboards.webp"
+                    class="dashboard-img" alt="dashboard">
+            </div>
+            <div class="heading-lyt">
+                <h2 class="name typ-green">Fintech</h2>
+            </div>
+            <div class="flx-items typ-greentab-items">
+                <p class="green-name">Automation</p>
+                <p class="green-name">CRM</p>
+                <p class="green-name">HR Tools</p>
+                <p class="green-name">ERP</p>
+            </div>
+        </div>
+        <div class="typ-tab-box blue-tab">
+            <div class="img-wrapper">
+                <img src="https://cdn.prod.website-files.com/63e7894221f7cc20e07be64b/6a02da6d74388f845ebf379a_blue-inactive.svg"
+                    class="img-inactive" alt="inactive">
+                <img src="https://cdn.prod.website-files.com/63e7894221f7cc20e07be64b/6a02eab0e0a8f6a4aa0398f0_blue-active.svg"
+                    class="img-active" alt="img-fluid">
+            </div>
+            <div class="dashboard-wrapper">
+                <img src="https://cdn.prod.website-files.com/63e7894221f7cc20e07be64b/6a02f52b9c6d89d32b1e6f55_dashboards.webp"
+                    class="dashboard-img" alt="dashboard">
+            </div>
+            <div class="dashboard-wrapper">
+                <img src="https://cdn.prod.website-files.com/63e7894221f7cc20e07be64b/6a02f52b9c6d89d32b1e6f55_dashboards.webp"
+                    class="dashboard-img" alt="dashboard">
+            </div>
+            <div class="dashboard-wrapper">
+                <img src="https://cdn.prod.website-files.com/63e7894221f7cc20e07be64b/6a02f52b9c6d89d32b1e6f55_dashboards.webp"
+                    class="dashboard-img" alt="dashboard">
+            </div>
+            <div class="dashboard-wrapper">
+                <img src="https://cdn.prod.website-files.com/63e7894221f7cc20e07be64b/6a02f52b9c6d89d32b1e6f55_dashboards.webp"
+                    class="dashboard-img" alt="dashboard">
+            </div>
+            <div class="heading-lyt">
+                <h2 class="name typ-blue">Enterprise</h2>
+            </div>
+            <div class="flx-items typ-bluetab-items">
+                <p class="blue-name">CRM</p>
+                <p class="blue-name">HR Tools</p>
+                <p class="blue-name">ERP</p>
+                <p class="blue-name">Automation</p>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+
+</html>

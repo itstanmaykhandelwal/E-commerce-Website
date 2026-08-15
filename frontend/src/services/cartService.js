@@ -6,17 +6,12 @@ import api from "../lib/axios";
 
 export const getCartData = async () => {
     try {
-
         const response = await api.post("/api/cart/get");
 
         return response.data;
-
     } catch (error) {
-
-        console.log(error);
-
+        console.log("Get Cart Error:", error);
         throw error;
-
     }
 };
 
@@ -26,20 +21,15 @@ export const getCartData = async () => {
 
 export const addItemToCart = async (cartData) => {
     try {
-
         const response = await api.post(
             "/api/cart/add",
             cartData
         );
 
         return response.data;
-
     } catch (error) {
-
-        console.log(error);
-
+        console.log("Add Cart Error:", error);
         throw error;
-
     }
 };
 
@@ -49,20 +39,15 @@ export const addItemToCart = async (cartData) => {
 
 export const updateCartItem = async (cartData) => {
     try {
-
         const response = await api.post(
             "/api/cart/update",
             cartData
         );
 
         return response.data;
-
     } catch (error) {
-
-        console.log(error);
-
+        console.log("Update Cart Error:", error);
         throw error;
-
     }
 };
 
@@ -70,21 +55,16 @@ export const updateCartItem = async (cartData) => {
 // REMOVE CART ITEM
 // =========================
 
-// export const removeCartItem = async (cartData) => {
-//     try {
+export const removeCartItem = async (cartData) => {
+    try {
+        const response = await api.post(
+            "/api/cart/remove",
+            cartData
+        );
 
-//         const response = await api.post(
-//             "/api/cart/remove",
-//             cartData
-//         );
-
-//         return response.data;
-
-//     } catch (error) {
-
-//         console.log(error);
-
-//         throw error;
-
-//     }
-// };
+        return response.data;
+    } catch (error) {
+        console.log("Remove Cart Error:", error);
+        throw error;
+    }
+};

@@ -350,7 +350,11 @@ const Product = () => {
                         <p className="font-semibold mb-3 text-slate-900">
                             Quantity
                         </p>
-
+                        <p className="text-sm text-slate-500 mb-3">
+                            {productData.quantity > 0
+                                ? `${productData.quantity} items available`
+                                : "Out of stock"}
+                        </p>
                         <div className="flex items-center gap-3">
                             <button
                                 onClick={() =>
@@ -366,7 +370,14 @@ const Product = () => {
                             </span>
 
                             <button
-                                onClick={() => setQuantity((prev) => prev + 1)}
+                                onClick={() =>
+                                    setQuantity((prev) =>
+                                        Math.min(
+                                            Number(productData.quantity) || 1,
+                                            prev + 1,
+                                        ),
+                                    )
+                                }
                                 className="w-12 h-12 rounded-xl border border-gray-300 hover:border-black hover:bg-black hover:text-white transition"
                             >
                                 +
@@ -377,28 +388,56 @@ const Product = () => {
                     {/* ACTION BUTTONS */}
                     <div className="flex flex-col sm:flex-row gap-4 pt-6">
                         <RippleButton
-                            onClick={() => {
-                                if (productData.sizes?.length > 0 && !size) {
-                                    toast.error("Please select size");
+                            // onClick={() => {
+                            //     if (productData.quantity <= 0) {
+                            //         toast.error("Product is out of stock");
+                            //         return;
+                            //     }
 
-                                    return;
-                                }
+                            //     if (productData.sizes?.length > 0 && !size) {
+                            //         toast.error("Please select size");
+                            //         return;
+                            //     }
 
-                                if (productData.color?.length > 0 && !color) {
-                                    toast.error("Please select color");
+                            //     if (productData.color?.length > 0 && !color) {
+                            //         toast.error("Please select color");
+                            //         return;
+                            //     }
 
-                                    return;
-                                }
+                            //     if (quantity > Number(productData.quantity)) {
+                            //         toast.error(
+                            //             `Only ${productData.quantity} item(s) available`,
+                            //         );
+                            //         return;
+                            //     }
 
-                                addToCart(
-                                    productData._id,
-                                    size ? size.trim() : "default",
-                                    color ? color.trim() : "default",
-                                    quantity,
-                                );
+                            //     addToCart(
+                            //         productData._id,
+                            //         size ? size.trim() : "default",
+                            //         color ? color.trim() : "default",
+                            //         quantity,
+                            //     );
 
-                                toast.success("Added to cart");
-                            }}
+                            //     toast.success("Added to cart");
+                            // }}
+                            onClick={async () => {
+    if (productData.sizes?.length > 0 && !size) {
+        toast.error("Please select size");
+        return;
+    }
+
+    if (productData.color?.length > 0 && !color) {
+        toast.error("Please select color");
+        return;
+    }
+
+    await addToCart(
+        productData._id,
+        size ? size.trim() : "default",
+        color ? color.trim() : "default",
+        quantity,
+    );
+}}
                         >
                             Add To Cart
                         </RippleButton>
@@ -485,7 +524,8 @@ const Product = () => {
                                     <div>
                                         {/* NAME */}
                                         <h4 className="text-lg font-semibold text-slate-900">
-                                            {review?.userId?.name || "Anonymous User"}
+                                            {review?.userId?.name ||
+                                                "Anonymous User"}
                                         </h4>
 
                                         {/* STARS */}
@@ -505,12 +545,14 @@ const Product = () => {
 
                                         {/* REVIEW TEXT */}
                                         <p className="text-slate-600 leading-relaxed">
-                                           {review.comment}
+                                            {review.comment}
                                         </p>
 
                                         {/* DATE */}
                                         <p className="text-xs text-slate-400 mt-4">
-                                            {new Date(review.date).toDateString()}
+                                            {new Date(
+                                                review.date,
+                                            ).toDateString()}
                                         </p>
                                     </div>
                                 </div>
@@ -526,7 +568,7 @@ const Product = () => {
                                                 setRating(review.rating);
 
                                                 // setReviewText(review.review);
-                                                setReviewText(review.comment)
+                                                setReviewText(review.comment);
 
                                                 setShowReviewModal(true);
                                             }}
